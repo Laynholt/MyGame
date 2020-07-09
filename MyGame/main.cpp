@@ -19,7 +19,7 @@ float fPlayerY = 1.0f;
 float fPlayerXBuf = fPlayerX;
 float fPlayerYBuf = fPlayerY;
 float fEndGameX = 2.0f;										// Координаты конца игры
-float fEndGameY = 2.0f;									
+float fEndGameY = 99.0f;									
 float fPlayerA = 0.0f;										// Направление игрока
 float fSpeed = 4.0f;										// Скорость передвижения
 
@@ -70,7 +70,7 @@ int main()
 	DWORD dwBytesWritten = 0;
 
 	wstring map;
-	int32_t iStopwatch = 0;
+	float iStopwatch = 0;
 
 	map += L"##################################################";
 	map += L"#................................#...............#";
@@ -216,7 +216,7 @@ int main()
 
 		else
 		{
-			iStopwatch = clock();
+			iStopwatch = clock() / 1000.0f;
 
 			aTimePoint2 = chrono::system_clock::now();
 			chrono::duration<float> elapsedTime = aTimePoint2 - aTimePoint1;
@@ -385,7 +385,7 @@ int main()
 			iSoundEffectDelay--;
 
 			// Вывод координат и таймера
-			swprintf_s(console, 40, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %4.3f", fPlayerX, fPlayerY, fPlayerA, (float)iStopwatch/1000.0f);
+			swprintf_s(console, 50, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f", fPlayerX, fPlayerY, fPlayerA, iStopwatch);
 		}
 		//for (int16_t nx = 0; nx < iMapWidth; nx++)
 		//	for (int16_t ny = 0; ny < iMapHeight; ny++)
