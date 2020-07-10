@@ -29,6 +29,7 @@ int main()
 	wstring map;
 	float iStopwatch = 0;
 	int16_t iScreanDelay = 0;
+	int16_t iObiliscCounter = 0;
 
 	map_pulling(map);
 
@@ -83,6 +84,14 @@ int main()
 			}
 
 			iScreanDelay++;
+		}
+
+		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '*')	// Обелиск
+		{
+			iObiliscCounter++;
+			map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] = '.';
+			fPlayerX = 5.0f;
+			fPlayerY = 80.0f;
 		}
 
 		else
@@ -149,7 +158,7 @@ int main()
 						fDistanceToWall = fDepth;
 					}
 					
-					else if (map[nTestY * iMapWidth + nTestX] == '№')
+					else if (map[nTestY * iMapWidth + nTestX] == '*')
 					{
 						bHitWall = true;
 						bObiliskFound = true;
@@ -181,7 +190,7 @@ int main()
 
 					else
 					{
-						siShade = 0x2551;
+						siShade = 0x2248;
 					}
 
 					if (bBoundary)		siShade = 0x2551; // 2502
@@ -229,6 +238,7 @@ int main()
 
 			iWalkDelay++;
 
+			// Проигрывание звуков
 			if (iSoundEffectDelay == 0)
 			{
 				int16_t q = rand() % 3;
@@ -258,7 +268,8 @@ int main()
 			iSoundEffectDelay--;
 
 			// Вывод координат и таймера
-			swprintf_s(console, 50, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f", fPlayerX, fPlayerY, fPlayerA, iStopwatch);
+			swprintf_s(console, 80, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f, Find all obelisks [%d|5]", fPlayerX,
+				fPlayerY, fPlayerA, iStopwatch, iObiliscCounter);
 		}
 
 		// Вывод на экран
