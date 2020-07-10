@@ -61,6 +61,14 @@ int main()
 	audiere::AudioDevicePtr d5 = audiere::OpenDevice();
 	audiere::OutputStreamPtr s5 = OpenSound(d5, "strashnye-zvuki-dyavolskiy-smeh.ogg", false);			// Создаем поток для нашего звука
 
+	// Открываем файл со звуком портала
+	audiere::AudioDevicePtr d6 = audiere::OpenDevice();
+	audiere::OutputStreamPtr s6 = OpenSound(d6, "portal.ogg", true);			// Создаем поток для нашего звука
+
+	// Открываем файл со звуком закрытия портала
+	audiere::AudioDevicePtr d7 = audiere::OpenDevice();
+	audiere::OutputStreamPtr s7 = OpenSound(d7, "exit_from_portal.ogg", false);			// Создаем поток для нашего звука
+
 	int32_t iSoundEffectDelay = 100;
 
 	auto aTimePoint1 = chrono::system_clock::now();
@@ -69,7 +77,7 @@ int main()
 	// Игровой цикл
 	while (true)
 	{
-		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%')    // Символ конца игры
+		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 5)    // Символ конца игры
 		{
 			game_over(console, 0x256C);
 		}
@@ -88,10 +96,12 @@ int main()
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '*')	// Обелиск
 		{
+			s7->play();															// Проигрывается музыка исчезновения
+			s7->setVolume(0.6f);
 			iObiliscCounter++;
-			map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] = '.';
-			fPlayerX = 5.0f;
-			fPlayerY = 80.0f;
+			map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] = '.';		// Исчезает обелиск
+			/*fPlayerX = 5.0f;													// Телепорт игрока
+			fPlayerY = 80.0f;*/
 		}
 
 		else
@@ -237,6 +247,13 @@ int main()
 			}
 
 			iWalkDelay++;
+
+			////Обелиск
+			if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '@')
+			{
+				s6->play();
+				s6->setVolume(0.6f);
+			}
 
 			// Проигрывание звуков
 			if (iSoundEffectDelay == 0)
