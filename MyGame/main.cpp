@@ -18,15 +18,13 @@ float fPlayerX = 1.0f;
 float fPlayerY = 1.0f;
 float fPlayerXBuf = fPlayerX;
 float fPlayerYBuf = fPlayerY;
-float fEndGameX = 2.0f;										// Координаты конца игры
-float fEndGameY = 99.0f;									
 float fPlayerA = 0.0f;										// Направление игрока
 float fSpeed = 4.0f;										// Скорость передвижения
 
 float fFoV = 3.14159f / 4.0f;								// Угол обзора
 float fDepth = 75.0f;										// Максимальная дистанция обзора
 
-void game_over(wchar_t* console, wchar_t a, wchar_t b, wchar_t c)
+void game_over(wchar_t* console, wchar_t a)
 {
 	int16_t rand_flag = rand() % 10;
 
@@ -36,7 +34,7 @@ void game_over(wchar_t* console, wchar_t a, wchar_t b, wchar_t c)
 		{
 			if (rand_flag != 0)
 			{
-				console[y * iConsoleWidth + x] = b;
+				console[y * iConsoleWidth + x] = a;
 			}
 
 			else
@@ -73,7 +71,7 @@ int main()
 	float iStopwatch = 0;
 
 	map += L"##################################################";
-	map += L"#................................#...............#";
+	map += L"#..%.............................#...............#";
 	map += L"#.#########......................#...#####.......#";
 	map += L"#................###############.#...............#";
 	map += L"#................................................#";
@@ -173,9 +171,6 @@ int main()
 	map += L"#......###############...........................#";
 	map += L"##################################################";
 
-	// Случайное заполнение карты
-	//int16_t iMaxShards = 
-
 	// Воспроизводим музыку
 	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
 	audiere::OutputStreamPtr sound = OpenSound(device, "Apocryphos, Kammarheit, Atrium Carceri - Cavern of Igneous Flame.mp3", true); // Создаем поток для нашего звука
@@ -208,10 +203,9 @@ int main()
 	// Игровой цикл
 	while (true)
 	{
-
-		if ((fPlayerX >= fEndGameX - 1.0f) && (fPlayerX <= fEndGameX + 1.0f) && (fPlayerY >= fEndGameY - 1.0f) && (fPlayerY <= fEndGameY + 1.0f))
+		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%')    // Символ конца игры
 		{
-			game_over(console, 0x2591, 0x256C, 0x253C);
+			game_over(console, 0x256C);
 		}
 
 		else
@@ -234,7 +228,8 @@ int main()
 				fPlayerX += sinf(fPlayerA) * fSpeed * fElapsedTime;
 				fPlayerY += cosf(fPlayerA) * fSpeed * fElapsedTime;
 
-				if (map[(int)fPlayerY * iMapWidth + (int)fPlayerX] == '#') { // Если столкнулись со стеной, то откатываем шаг
+				if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '#')  // Если столкнулись со стеной, то откатываем шаг
+				{
 					fPlayerX -= sinf(fPlayerA) * fSpeed * fElapsedTime;
 					fPlayerY -= cosf(fPlayerA) * fSpeed * fElapsedTime;
 				}
@@ -244,7 +239,8 @@ int main()
 			{
 				fPlayerX -= sinf(fPlayerA) * fSpeed * fElapsedTime;
 				fPlayerY -= cosf(fPlayerA) * fSpeed * fElapsedTime;
-				if (map[(int)fPlayerY * iMapWidth + (int)fPlayerX] == '#') { // Если столкнулись со стеной, но откатываем шаг
+				if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '#')  // Если столкнулись со стеной, но откатываем шаг
+				{
 					fPlayerX += sinf(fPlayerA) * fSpeed * fElapsedTime;
 					fPlayerY += cosf(fPlayerA) * fSpeed * fElapsedTime;
 				}
@@ -265,8 +261,8 @@ int main()
 				{
 					fDistanceToWall += 0.1f;
 
-					int nTestX = (int)(fPlayerX + fEyeX * fDistanceToWall);								// Точка на игровом поле
-					int nTestY = (int)(fPlayerY + fEyeY * fDistanceToWall);								// в которую попал луч
+					int16_t nTestX = (int16_t)(fPlayerX + fEyeX * fDistanceToWall);								// Точка на игровом поле
+					int16_t nTestY = (int16_t)(fPlayerY + fEyeY * fDistanceToWall);								// в которую попал луч
 
 					if (nTestX < 0 || nTestX >= iMapWidth || nTestY < 0 || nTestY >= iMapHeight)
 					{																					// Если мы вышли за зону
@@ -312,7 +308,7 @@ int main()
 
 					if (bBoundary)		siShade = 0x2551; // 2502
 
-					for (int y = 0; y < iConsoleHeight; y++)
+					for (int16_t y = 0; y < iConsoleHeight; y++)
 					{
 						if (y <= iCeiling)
 							console[y * iConsoleWidth + x] = ' ';
@@ -387,12 +383,6 @@ int main()
 			// Вывод координат и таймера
 			swprintf_s(console, 50, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f", fPlayerX, fPlayerY, fPlayerA, iStopwatch);
 		}
-		//for (int16_t nx = 0; nx < iMapWidth; nx++)
-		//	for (int16_t ny = 0; ny < iMapHeight; ny++)
-		//	{
-		//		console[(ny + 1) * iConsoleWidth + nx] = map[ny * iMapWidth + nx];
-		//	}
-		//console[((int)fPlayerX + 1) * iConsoleWidth + (int)fPlayerY] = 'U';
 
 		// Вывод на экран
 		console[iConsoleHeight * iConsoleWidth - 1] = '\0';
