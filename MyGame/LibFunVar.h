@@ -28,10 +28,12 @@ extern float fSpeed;						// Скорость передвижения
 extern float fFoV;							// Угол обзора
 extern float fDepth;
 
+void letter(wchar_t* console, wchar_t* message, int32_t size_message);
 void screamer(wchar_t* console);
 void game_over(wchar_t* console, wchar_t a);
 void map_pulling(wstring& map);
 bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
+
 
 #endif // !_LIBFUNVAR_H_
 

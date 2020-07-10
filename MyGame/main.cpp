@@ -28,7 +28,8 @@ int main()
 
 	wstring map;
 	float iStopwatch = 0;
-	int16_t iScreanDelay = 0;
+	int16_t iScreamDelay = 0;
+	int16_t iMessageDelay = 0;
 	int16_t iObiliscCounter = 0;
 
 	map_pulling(map);
@@ -82,16 +83,26 @@ int main()
 			game_over(console, 0x256C);
 		}
 
-		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreanDelay <= 25)    // Символ скримера
+		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreamDelay <= 25)    // Символ скримера
 		{
-			if (iScreanDelay == 0)
+			if (iScreamDelay == 0)
 			{
 				screamer(console);
 				s5->play();
 				s5->setVolume(0.6f);
 			}
 
-			iScreanDelay++;
+			iScreamDelay++;
+		}
+
+		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?' && iMessageDelay <= 50)    // Символ сообщения
+		{
+			if (iMessageDelay == 0)
+			{
+				wchar_t a[5] = { 'R', 'U', 'N', '!', '?' };
+				letter(console, a, 5);
+			}
+			iMessageDelay++;
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '*')	// Обелиск
@@ -107,7 +118,8 @@ int main()
 		else
 		{
 			iStopwatch = clock() / 1000.0f;
-			iScreanDelay = 0;
+			iScreamDelay = 0;
+			iMessageDelay = 0;
 
 			aTimePoint2 = chrono::system_clock::now();
 			chrono::duration<float> elapsedTime = aTimePoint2 - aTimePoint1;

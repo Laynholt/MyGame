@@ -1,5 +1,42 @@
 #include "LibFunVar.h"
 
+void letter(wchar_t* console, wchar_t* message, int32_t size_message)
+{
+	int32_t i = 0;
+	int16_t A, B, C, D;
+
+	A = iConsoleWidth / 5;
+	B = iConsoleWidth - iConsoleWidth / 5;
+	C = iConsoleHeight / 6;
+	D = iConsoleHeight - iConsoleHeight / 6;
+
+	for (int16_t x = 0; x < iConsoleWidth; x++)
+	{
+		for (int16_t y = 0; y < iConsoleHeight; y++)
+		{
+			if ((x >= A) && (x <= B) && (y >= C) && (y <= D))
+			{
+				if (((x >= A) && (x <= B) && (y == C)) || ((x >= A) && (x <= B) && (y == D)) ||
+					((y >= C) && (y <= D) && (x == A)) || ((y >= C) && (y <= D) && (x == B)))
+				{
+					console[y * iConsoleWidth + x] = 0x00F7;
+				}
+
+				else if ((x >= A + 5) && (x <= B - 5) && (y >= C + 2) && (y <= D - 2) && i < size_message)
+				{
+					console[y * iConsoleWidth + x] = message[i++];
+				}
+
+				else
+				{
+					console[y * iConsoleWidth + x] = 0x2593;
+					i = 0;
+				}
+			}
+		}
+	}
+}
+
 void screamer(wchar_t* console)
 {
 	int16_t rand_flag = rand() % 17;
@@ -53,8 +90,8 @@ void game_over(wchar_t* console, wchar_t a)
 void map_pulling(wstring& map)
 {
 	map += L"##################################################";
-	map += L"#...........%....................#...............#";
-	map += L"#@#########......................#...#####.......#";
+	map += L"#...........?....................#...............#";
+	map += L"#.#########......................#...#####.......#";
 	map += L"#................###############.#...............#";
 	map += L"#................................................#";
 	map += L"#@@@@............................................#";
