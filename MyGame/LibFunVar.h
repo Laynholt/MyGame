@@ -12,20 +12,26 @@
 
 using namespace std;
 
-int16_t iConsoleWidth = 150;								// Ширина консоли
-int16_t iConsoleHeight = 40;								// Высота консоли
-int16_t iMapWidth = 50;										// Ширина карты
-int16_t iMapHeight = 100;									// Высота карты
 
-float fPlayerX = 1.0f;
-float fPlayerY = 1.0f;
-float fPlayerXBuf = fPlayerX;
-float fPlayerYBuf = fPlayerY;
-float fPlayerA = 0.0f;										// Направление игрока
-float fSpeed = 4.0f;										// Скорость передвижения
+extern int16_t iConsoleWidth;				// Ширина консоли
+extern int16_t iConsoleHeight;				// Высота консоли
+extern int16_t iMapWidth;					// Ширина карты
+extern int16_t iMapHeight;					// Высота карты
 
-float fFoV = 3.14159f / 4.0f;								// Угол обзора
-float fDepth = 75.0f;										// Максимальная дистанция обзора
+extern float fPlayerX;
+extern float fPlayerY;
+extern float fPlayerXBuf;
+extern float fPlayerYBuf;
+extern float fPlayerA;						// Направление игрока
+extern float fSpeed;						// Скорость передвижения
+
+extern float fFoV;							// Угол обзора
+extern float fDepth;
+
+void screamer(wchar_t* console);
+void game_over(wchar_t* console, wchar_t a);
+void map_pulling(wstring& map);
+bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 
 #endif // !_LIBFUNVAR_H_
 
