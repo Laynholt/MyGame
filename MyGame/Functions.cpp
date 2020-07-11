@@ -72,7 +72,7 @@ void screamer(wchar_t* console)
 	}
 }
 
-void game_over(wchar_t* console, wchar_t a)
+bool game_over(wchar_t* console, wchar_t a)
 {
 	int16_t rand_flag = rand() % 10;
 
@@ -80,6 +80,9 @@ void game_over(wchar_t* console, wchar_t a)
 	{
 		for (int16_t y = 0; y < iConsoleHeight; y++)
 		{
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
+				return true;
+
 			if (rand_flag != 0)
 			{
 				console[y * iConsoleWidth + x] = a;
@@ -102,6 +105,7 @@ void game_over(wchar_t* console, wchar_t a)
 			rand_flag = rand() % 3;
 		}
 	}
+	return false;
 }
 
 
@@ -205,7 +209,7 @@ void map_pulling(wstring& map)
 	map += L"#................###############.#...............#";
 	map += L"#................................................#";
 	map += L"#................................................#";
-	map += L"#%.....###############...........................#";
+	map += L"#......###############...........................#";
 	map += L"##################################################";
 }
 
@@ -235,8 +239,8 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY)
 }
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
-{                                                                
-	char startTime[80];                                           
+{
+	char startTime[80];
 	time_t seconds = time(NULL);
 	strftime(startTime, 80, "%A %d %B %Y %H:%M:%S", localtime(&seconds));
 	ofstream file;
@@ -245,6 +249,64 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
 		<< " " << Time << " " << iObiliscCounter << endl;
 	file.close();
 
+}
+
+void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
+{
+	ifstream file("save.txt");
+	string line;
+	bool exit = 0;
+	int16_t iObiliscCounter, Time, menu, whil = 0;
+
+	iObiliscCounter = Time = 0;
+
+	if (file.is_open())
+	{
+		cout << "ALL SAVES: \n";
+
+		while (!exit)
+		{
+			while (getline(file, line))
+			{
+				cout << "\nSave [" << ++whil << "] " << line;
+			}
+
+			file.close();
+			file.open("save.txt");
+
+			cout << "\nChoose an action >> ";
+			cin >> menu;
+			if (menu <= whil && menu > 0)
+			{
+				/*file.seekg(0, file.beg);*/
+				for (int16_t i = 0; i < menu; i++)
+				{
+					for (int16_t j = 0; j < 5; j++)
+						file >> line;
+
+					file >> fPlayerX;
+					file >> fPlayerY;
+					file >> fPlayerA;
+					file >> Time;
+					file >> iObiliscCounter;
+				}
+
+
+				exit = 1;
+			}
+
+			else
+			{
+				whil = 0;
+				cout << "\nChoose again!\n";
+				//system("cls");
+			}
+		}
+	}
+
+	file.close();
+	sound->stop();
+	game(fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter);
 }
 
 void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сама игра
@@ -259,6 +321,10 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	wstring map;
 	float fStopwatch = Time;
 	int16_t iScreamDelay = 0;
+	int16_t iRunDelay = 0;
+	bool bZFlag = false;
+	float fSpeedBoost = 4.0f;
+	int16_t iTimeBeforeRun = 0;
 	int16_t iMessageDelay = 0;
 	int16_t iObiliscCounter = iObiliscSave;
 
@@ -310,7 +376,11 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	{
 		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 5)    // Символ конца игры
 		{
-			game_over(console, 0x256C);
+			if (game_over(console, 0x256C))
+			{
+				//delete[] console;
+				//return;
+			}
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreamDelay <= 25)    // Символ скримера
@@ -381,13 +451,48 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 				save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter);
 
 			if (GetAsyncKeyState((unsigned short)'A') & 0x8000)		// Клавишей "A" поворачиваем по часовой стрелке
-				fPlayerA -= (fSpeed * 0.5f) * fElapsedTime;
+				fPlayerA -= (fSpeedCamera * 0.5f) * fElapsedTime;
 
 			if (GetAsyncKeyState((unsigned short)'D') & 0x8000)		// Клавишей "D" поворачиваем против часовой стрелки
-				fPlayerA += (fSpeed * 0.5f) * fElapsedTime;
+				fPlayerA += (fSpeedCamera * 0.5f) * fElapsedTime;
 
 			if (GetAsyncKeyState((unsigned short)'W') & 0x8000)		// Клавишей "W" идём вперёд
 			{
+				if (GetAsyncKeyState((unsigned short)'Z') & 0x8000)
+					bZFlag = true;
+
+				if (bZFlag)
+				{
+					if (iTimeBeforeRun == 0 && iRunDelay == 0)
+					{
+						fSpeed += fSpeedBoost;
+
+					}
+
+					iTimeBeforeRun++;
+
+					if (iTimeBeforeRun == 300)
+					{
+						fSpeed -= fSpeedBoost;
+						iRunDelay = 1000;
+					}
+
+					else if (iTimeBeforeRun > 300)
+					{
+						if (iRunDelay == 0)
+						{
+							iTimeBeforeRun = 0;
+							bZFlag = false;
+						}
+
+						else
+						{
+							iRunDelay--;
+						}
+					}
+				}
+
+
 				fPlayerX += sinf(fPlayerA) * fSpeed * fElapsedTime;
 				fPlayerY += cosf(fPlayerA) * fSpeed * fElapsedTime;
 
@@ -507,9 +612,16 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 				iWalkDelay = 0;
 			}
 
-			else if (iWalkDelay == 23)
+			else if ((int16_t)fSpeed == SPEED)
 			{
-				iWalkDelay = -1;
+				if(iWalkDelay == 23)
+					iWalkDelay = -1;
+			}
+
+			else if ((int16_t)fSpeed == SPEED + (int16_t)fSpeedBoost)
+			{
+				if (iWalkDelay == 15)
+					iWalkDelay = -1;
 			}
 
 			iWalkDelay++;
@@ -551,8 +663,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 			iSoundEffectDelay--;
 
 			// Вывод координат и таймера
-			swprintf_s(console, 80, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f, Find all obelisks [%d|5]", fPlayerX,
-				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter);
+			swprintf_s(console, 90, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f, Find all obelisks [%d|5], Speed: %2.2f", fPlayerX,
+				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, fSpeed);
 		}
 
 		// Вывод на экран
@@ -574,68 +686,10 @@ void authors()//просто так
 
 	cout << "|--------------------------------------------------------------------|\n"
 		"|   		                 AUTHORS                                      |\n"
-		"|  		                      |\n" 
+		"|  		                      |\n"
 		"|   		         https://github.com/VariableRiw/MyGame          |\n"
 		"|   			   		     |\n"
 		"|--------------------------------------------------------------------|\n";
 	system("pause");
 
-}
-
-void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
-{
-	ifstream file("save.txt");
-	string line;
-	bool exit = 0;
-	int16_t iObiliscCounter, Time, menu, whil = 0;
-
-	iObiliscCounter = Time = 0;
-
-	if (file.is_open())
-	{
-		cout << "ALL SAVES: \n";
-
-		while (!exit)
-		{
-			while (getline(file, line))
-			{
-				cout << "\nSave [" << ++whil << "] " << line;
-			}
-
-			file.close();
-			file.open("save.txt");
-
-			cout << "\nChoose an action >> ";
-			cin >> menu;
-			if (menu <= whil && menu > 0)
-			{
-				/*file.seekg(0, file.beg);*/
-				for (int16_t i = 0; i < menu; i++)
-				{
-					for (int16_t  j = 0; j < 5; j++)
-						file >> line;
-						
-					file >> fPlayerX;
-					file >> fPlayerY;
-					file >> fPlayerA;
-					file >> Time;
-					file >> iObiliscCounter;
-				}
-
-				
-				exit = 1;
-			}
-
-			else 
-			{ 
-				whil = 0;
-				cout << "\nChoose again!\n"; 
-				//system("cls");
-			}
-		}
-	}
-	
-	file.close();
-	sound->stop();
-	game(fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter);
 }
