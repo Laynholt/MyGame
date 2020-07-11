@@ -234,19 +234,20 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY)
 	return bBoundary;
 }
 
-void save(float fPlayerX, float fPlayerY, int16_t iObiliscCounter)//запись сохраненией, но почему-то 
-{                                                                //сохраняет сразу много одного и того же, можно сделать как 
-	char startTime[80];                                           // с обелисками, тронул - сохранился
+void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
+{                                                                
+	char startTime[80];                                           
 	time_t seconds = time(NULL);
 	strftime(startTime, 80, "%A %d %B %Y %H:%M:%S", localtime(&seconds));
 	ofstream file;
 	file.open("save.txt", ios_base::app); // запись в конец файла
-	file << startTime << " " << fPlayerX << " " << fPlayerY << " " << iObiliscCounter << endl;
+	file << startTime << " " << (int16_t)fPlayerX << " " << (int16_t)fPlayerY << " " << (int16_t)fPlayerA
+		<< " " << Time << " " << iObiliscCounter << endl;
 	file.close();
 
 }
 
-void game(float fX, float fY, int16_t iObiliscC)//сама игра
+void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сама игра
 {
 
 	// Создаём буфер экрана
@@ -256,10 +257,10 @@ void game(float fX, float fY, int16_t iObiliscC)//сама игра
 	DWORD dwBytesWritten = 0;
 
 	wstring map;
-	float iStopwatch = 0;
+	float fStopwatch = Time;
 	int16_t iScreamDelay = 0;
 	int16_t iMessageDelay = 0;
-	int16_t iObiliscCounter = 0;
+	int16_t iObiliscCounter = iObiliscSave;
 
 	map_pulling(map);
 
@@ -324,14 +325,14 @@ void game(float fX, float fY, int16_t iObiliscC)//сама игра
 			iScreamDelay++;
 		}
 
-		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?' && iMessageDelay <= 50)    // Символ сообщения
+		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?' && iMessageDelay == 0)    // Символ сообщения
 		{
-			if (iMessageDelay == 0)
-			{
-				wchar_t a[5] = { 'R', 'U', 'N', '!', '?' };
-				letter(console, a, 5);
-			}
-			iMessageDelay++;
+			wchar_t a[5] = { 'R', 'U', 'N', '!', '?' };
+			letter(console, a, 5);
+			_getch();
+
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
+				iMessageDelay++;
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '*')	// Обелиск
@@ -363,9 +364,13 @@ void game(float fX, float fY, int16_t iObiliscC)//сама игра
 
 		else
 		{
-			iStopwatch = clock() / 1000.0f;
+			fStopwatch = clock() / 1000.0f;
 			iScreamDelay = 0;
-			iMessageDelay = 0;
+
+			if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?')	// Для повторого подбора сообщения
+			{
+				iMessageDelay = 0;
+			}
 
 			aTimePoint2 = chrono::system_clock::now();
 			chrono::duration<float> elapsedTime = aTimePoint2 - aTimePoint1;
@@ -373,7 +378,7 @@ void game(float fX, float fY, int16_t iObiliscC)//сама игра
 			float fElapsedTime = elapsedTime.count();
 
 			if (GetAsyncKeyState((unsigned short)'U') & 0x8000)		// Клавишей "U" сохраняем координаты и время игры
-				save(fPlayerX, fPlayerY, iObiliscCounter);
+				save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter);
 
 			if (GetAsyncKeyState((unsigned short)'A') & 0x8000)		// Клавишей "A" поворачиваем по часовой стрелке
 				fPlayerA -= (fSpeed * 0.5f) * fElapsedTime;
@@ -547,7 +552,7 @@ void game(float fX, float fY, int16_t iObiliscC)//сама игра
 
 			// Вывод координат и таймера
 			swprintf_s(console, 80, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f, Find all obelisks [%d|5]", fPlayerX,
-				fPlayerY, fPlayerA, iStopwatch, iObiliscCounter);
+				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter);
 		}
 
 		// Вывод на экран
@@ -581,29 +586,56 @@ void continue_game()  // открытие сохранений, но не выходит передать в game() па
 {
 	ifstream file("save.txt");
 	string line;
-	int16_t i, j, iObiliscCounter, menu, whil = 0;
+	bool exit = 0;
+	int16_t iObiliscCounter, Time, menu, whil = 0;
+
+	iObiliscCounter = Time = 0;
+
 	if (file.is_open())
 	{
-		cout << "SAVES\n";
+		cout << "ALL SAVES: \n";
 
-		while (getline(file, line)) {
-			cout << "\nSave #" << ++whil << " " << line;
-		}
-		cout << "\nChoose an action >> ";
-		cin >> menu;
-		if (menu <= whil && menu > 0)
+		while (!exit)
 		{
-			file.seekg(0, ios_base::beg);
-			for (i = 0; i < menu; i++)
+			while (getline(file, line))
 			{
-				for (j = 0; j < 4; j++)
-					file >> line;
-				file >> fPlayerX;
-				file >> fPlayerY;
-				file >> iObiliscCounter;
+				cout << "\nSave [" << ++whil << "] " << line;
+			}
+
+			file.close();
+			file.open("save.txt");
+
+			cout << "\nChoose an action >> ";
+			cin >> menu;
+			if (menu <= whil && menu > 0)
+			{
+				/*file.seekg(0, file.beg);*/
+				for (int16_t i = 0; i < menu; i++)
+				{
+					for (int16_t  j = 0; j < 5; j++)
+						file >> line;
+						
+					file >> fPlayerX;
+					file >> fPlayerY;
+					file >> fPlayerA;
+					file >> Time;
+					file >> iObiliscCounter;
+				}
+
+				
+				exit = 1;
+			}
+
+			else 
+			{ 
+				whil = 0;
+				cout << "\nChoose again!\n"; 
+				//system("cls");
 			}
 		}
-		else 	cout << "\nChoose again!\n";
 	}
-	game(fPlayerX, fPlayerY, iObiliscCounter);
+	
+	file.close();
+
+	game(fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter);
 }
