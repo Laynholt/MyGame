@@ -1,17 +1,20 @@
 #ifndef _LIBFUNVAR_H_
 #define _LIBFUNVAR_H_
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <ctime>
 #include <chrono>
-#include <Windows.h>
 #include <cstdint>
 #include <vector>
-#include <algorithm>
 #include <audiere.h>
-#include <ctime>
+#include <conio.h>
+#include <Windows.h>
+#include "resource.h"
 
 using namespace std;
-
 
 extern int16_t iConsoleWidth;				// Ширина консоли
 extern int16_t iConsoleHeight;				// Высота консоли
@@ -28,12 +31,15 @@ extern float fSpeed;						// Скорость передвижения
 extern float fFoV;							// Угол обзора
 extern float fDepth;
 
-void letter(wchar_t* console, wchar_t* message, int32_t size_message);
 void screamer(wchar_t* console);
 void game_over(wchar_t* console, wchar_t a);
 void map_pulling(wstring& map);
 bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 
+void save(float fPlayerX, float fPlayerY, int16_t iObiliscCounter);
+void game(float fX = 1.0f, float fY = 1.0f, int16_t iObiliscC = 0);
+void authors();
+void continue_game();
 
 #endif // !_LIBFUNVAR_H_
 
