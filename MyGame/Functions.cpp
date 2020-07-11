@@ -582,7 +582,7 @@ void authors()//просто так
 
 }
 
-void continue_game()  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
+void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
 {
 	ifstream file("save.txt");
 	string line;
@@ -636,6 +636,6 @@ void continue_game()  // открытие сохранений, но не выходит передать в game() па
 	}
 	
 	file.close();
-
+	sound->stop();
 	game(fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter);
 }

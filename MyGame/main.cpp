@@ -23,6 +23,16 @@ int main()
 	int16_t choose = 0, index = 0;
 	int32_t value = 0;
 
+	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze");		// Меняем название консоли
+	SetConsoleTitle(ConsoleTitle);
+
+	// Воспроизводим музыку
+	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
+	audiere::OutputStreamPtr sound = OpenSound(device, "sounds/menu.ogg", true); // Создаем поток для нашего звука
+	sound->play();															// Проигрываем наш звук
+	sound->setVolume(0.5f);
+	sound->setRepeat(true);
+
 	while (exit)
 	{
 		cout <<
@@ -37,13 +47,15 @@ int main()
 		switch (choose)
 		{
 		case '1':
+			sound->stop();
 			game();  //запуск игры
 			break;
 		case '2':
-			continue_game(); //взятие сохраненией, сохраниться можно на U, либо на обелиске
+			continue_game(sound); //взятие сохраненией, сохраниться можно на U, либо на обелиске
 			break;
 		case '3':
 			authors();  // просто так
+			sound->stop();
 			break;
 		default:
 			cout << "\nChoose again!\n";

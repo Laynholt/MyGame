@@ -39,7 +39,7 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter);
 void game(float fX = 1.0f, float fY = 1.0f, float fA = 1.0f, int16_t Time = 0, int16_t iObiliscSave = 0);
 void authors();
-void continue_game();
+void continue_game(audiere::OutputStreamPtr sound);
 
 #endif // !_LIBFUNVAR_H_
 
