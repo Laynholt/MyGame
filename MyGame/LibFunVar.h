@@ -11,8 +11,9 @@
 #include <vector>
 #include <audiere.h>
 #include <conio.h>
-#include <locale>
 #include <Windows.h>
+#include <io.h>
+#include <fcntl.h>
 #include "resource.h"
 
 using namespace std;

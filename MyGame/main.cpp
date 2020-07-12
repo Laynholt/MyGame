@@ -18,10 +18,11 @@ float fDepth = 26.0f;
 
 int main()
 {
+	_setmode(_fileno(stdout), _O_U16TEXT);
+	_setmode(_fileno(stdin), _O_U16TEXT);
+	_setmode(_fileno(stderr), _O_U16TEXT);
+
 	srand(time(NULL));
-	//setlocale(LC_ALL, "rus");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
 	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 	bool exit = 1;
 	char choose = ' ';
@@ -42,12 +43,12 @@ int main()
 	{
 		wcout <<
 			L"|--------------------------------------------------------------------|\n"
-			"|                          1.NEW GAME                                |\n"
-			"|                        2.CONTINUE GAME                             |\n"
-			"|                           3.AURORS                                 |\n"
-			"|                           4.CONTROL                                |\n"
+			"|                          1.Новая игра                              |\n"
+			"|                        2.Продолжить игру                           |\n"
+			"|                         3.Разработчики                             |\n"
+			"|                          4.Управление                              |\n"
 			"|--------------------------------------------------------------------|\n";
-		wcout << L"\nChoose an action >> ";
+		wcout << L"\nВыберете опцию >> ";
 		choose = _getch();
 		switch (choose)
 		{
@@ -65,7 +66,7 @@ int main()
 			control();
 			break;
 		default:
-			wcout << L"\nChoose again!\n";
+			wcout << L"\nНекорректный выбор! Попробуйте ещё раз.\n";
 			break;
 		}
 		system("pause");
