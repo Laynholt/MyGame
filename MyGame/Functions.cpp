@@ -323,7 +323,7 @@ void open_map(wchar_t* console, wstring map)
 {
 	int16_t nx, nx1, ny, ny1;
 
-	for (nx = (int16_t)fPlayerX, nx1 = (int16_t)fPlayerX; nx1 < (int16_t)fPlayerX + 26; nx1++, nx++)
+	for (nx = (int16_t)fPlayerX, nx1 = (int16_t)fPlayerX; nx1 < iMapWidth; nx1++, nx++)
 		for (ny = (int16_t)fPlayerY, ny1 = (int16_t)fPlayerY + 13; ny1 > (int16_t)fPlayerY; ny1--, ny++)
 		{
 			if (nx1 > iMapWidth)
@@ -345,17 +345,17 @@ void open_map(wchar_t* console, wstring map)
 			if (ny1 * iMapWidth + nx1 <= 6000)
 			{
 				if (map[(ny1 - 2) * iMapWidth + nx1 - 1] == '@' || map[(ny1 - 2) * iMapWidth + nx1 - 1] == '!')
-					console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = '.';
+					console[(ny + 1 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = '.';
 				else
-					console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = map[(ny1 - 2) * iMapWidth + nx1 - 1];
+					console[(ny + 1 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = map[(ny1 - 2) * iMapWidth + nx1 - 1];
 			}
 
 			else
 			{
-				console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = ' ';
+				console[(ny + 1 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = ' ';
 			}
 		}
-	//console[13 * iConsoleWidth + 2] = 'U';
+	//console[((int16_t)fPlayerX + 41) * iConsoleWidth + (int16_t)fPlayerY] = 'P';
 }
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
