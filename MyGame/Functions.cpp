@@ -173,7 +173,7 @@ void map_pulling(wstring& map)
 {
 	map += L"##################################################";
 	map += L"#...........?....................#...............#";
-	map += L"#!#########......................#...#####.......#";
+	map += L"#.#########......................#...#####.......#";
 	map += L"#................###############.#...............#";
 	map += L"#................................................#";
 	map += L"#@@@@............................................#";
@@ -378,15 +378,18 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	SetConsoleActiveScreenBuffer(hConsole);
 	DWORD dwBytesWritten = 0;
 
-	wstring map;
-	float fStopwatch = Time;
-	int16_t iScreamDelay = 0;
-	int16_t iRunDelay = 0;
-	bool bZFlag = false;
-	float fSpeedBoost = 4.0f;
-	int16_t iTimeBeforeRun = 0;
-	int16_t iMessageDelay = 0;
-	int16_t iObiliscCounter = iObiliscSave;
+	wstring map;									// Карта
+	float fStopwatch = Time;						// Таймер
+	int16_t iScreamDelay = 0;						// Задержка для воспроизведения скримера
+	int16_t iRunDelay = 0;							// Задержка для востановления выносливости
+	bool bZFlag = false;							// Флаг того, что кнопку нажали
+	bool bMinimap = true;							// Миникарта вкл
+	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
+	float fSpeedBoost = 4.0f;						// Доп скорость при беге
+	int16_t iRunTime = 0;							// Время бега
+	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
+	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
+	/*int16_t YOU = 'U';*/
 
 	map_pulling(map);
 
@@ -452,6 +455,9 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 				s5->setVolume(0.6f);
 			}
 
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+				iScreamDelay = 100;
+
 			iScreamDelay++;
 		}
 
@@ -507,6 +513,21 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 			aTimePoint1 = aTimePoint2;
 			float fElapsedTime = elapsedTime.count();
 
+			if (GetAsyncKeyState(VK_TAB) & 0x8000)		// Клавишей "TAB" вкл/выкл миникарту
+			{
+				if (bMinimap && iMinimapDelay == 50)
+				{
+					bMinimap = false;
+					iMinimapDelay = 0;
+				}
+
+				else if (iMinimapDelay == 50)
+				{
+					bMinimap = true;
+					iMinimapDelay = 0;
+				}
+			}
+
 			if (GetAsyncKeyState((unsigned short)'U') & 0x8000)		// Клавишей "U" сохраняем координаты и время игры
 				save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter);
 
@@ -523,25 +544,25 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 
 				if (bZFlag)
 				{
-					if (iTimeBeforeRun == 0 && iRunDelay == 0)
+					if (iRunTime == 0 && iRunDelay == 0)
 					{
 						fSpeed += fSpeedBoost;
 
 					}
 
-					iTimeBeforeRun++;
+					iRunTime++;
 
-					if (iTimeBeforeRun == 300)
+					if (iRunTime == 300)
 					{
 						fSpeed -= fSpeedBoost;
 						iRunDelay = 1000;
 					}
 
-					else if (iTimeBeforeRun > 300)
+					else if (iRunTime > 300)
 					{
 						if (iRunDelay == 0)
 						{
-							iTimeBeforeRun = 0;
+							iRunTime = 0;
 							bZFlag = false;
 						}
 
@@ -722,6 +743,51 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 
 			iSoundEffectDelay--;
 
+			if (iMinimapDelay < 50)											// Задержка для вкл/выкл миникарты
+			{
+				iMinimapDelay++;
+			}
+
+			if (bMinimap)
+			{
+				// Миникарта
+				int16_t nx, nx1, ny, ny1;
+
+				for (nx = (int16_t)fPlayerX, nx1 = (int16_t)fPlayerX; nx1 < (int16_t)fPlayerX + 26; nx1++, nx++)
+					for (ny = (int16_t)fPlayerY, ny1 = (int16_t)fPlayerY + 13; ny1 > (int16_t)fPlayerY; ny1--, ny++)
+					{
+						if (ny1 * iMapWidth + nx1 < 5000)
+						{
+							if (map[(ny1 - 2) * iMapWidth + nx1 - 1] == '@' || map[(ny1 - 2) * iMapWidth + nx1 - 1] == '!')
+								console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = '.';
+							else
+								console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = map[(ny1 - 2) * iMapWidth + nx1 - 1];
+						}
+
+						else
+						{
+							console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = ' ';
+						}
+					}
+				console[13 * iConsoleWidth + 2] = 'U';
+
+				// Обводка миникарты
+				int16_t iMapCorner = 0x03A3;
+				for (nx = 0; nx < 28; nx++)
+				{
+					for (ny = 1; ny < 16; ny++)
+					{
+						if (nx == 0)
+							console[ny * iConsoleWidth] = iMapCorner;
+						else if (ny == 1)
+							console[ny * iConsoleWidth + nx] = iMapCorner;
+						else if (ny == 15)
+							console[ny * iConsoleWidth + nx] = iMapCorner;
+						else if (nx == 27)
+							console[ny * iConsoleWidth + nx] = iMapCorner;
+					}
+				}
+			}
 			// Вывод координат и таймера
 			swprintf_s(console, 90, L"X=%3.2f, Y=%3.2f, A=%3.2f, Time: %3.3f, Find all obelisks [%d|5], Speed: %2.2f", fPlayerX,
 				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, fSpeed);
@@ -733,23 +799,31 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	}
 }
 
-void authors()//просто так
+void authors()
 {
-	// Открываем файл для меню
-
 	system("cls");
-	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
-	audiere::OutputStreamPtr sound = OpenSound(device, "sounds/egg.ogg", false); // Создаем поток для нашего звука
-	sound->play();															// Проигрываем наш звук
-	sound->setVolume(0.5f);
-	sound->setRepeat(true);
-
-	cout << "|--------------------------------------------------------------------|\n"
-		"|   		                 AUTHORS                                      |\n"
-		"|  		                      |\n"
-		"|   		         https://github.com/VariableRiw/MyGame          |\n"
-		"|   			   		     |\n"
+	cout <<
+		"|--------------------------------------------------------------------|\n"
+		"|                             AUTHORS                                |\n"
+		"|               laynholt                  marco_dragan               |\n"
+		"|               https://github.com/VariableRiw/MyGame                |\n"
+		"|                                                                    |\n"
 		"|--------------------------------------------------------------------|\n";
-	system("pause");
 
+}
+
+void control() 
+{
+	system("cls");
+
+	cout <<
+		"|--------------------------------------------------------------------|\n"
+		"|                            W - forward                             |\n"
+		"|                            S - back                                |\n"
+		"|                            Z - run                                 |\n"
+		"|                            A - left turn                           |\n"
+		"|                            D - right turn                          |\n"
+		"|                            U - game save                           |\n"
+		"|                           TAB - minimap on|off                     |\n"
+		"|--------------------------------------------------------------------|\n";
 }

@@ -21,7 +21,8 @@ int main()
 	srand(time(NULL));
 	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 	bool exit = 1;
-	int16_t choose = 0, index = 0;
+	char choose = ' ';
+	int16_t index = 0;
 	int32_t value = 0;
 
 	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze");		// Меняем название консоли
@@ -38,10 +39,10 @@ int main()
 	{
 		cout <<
 			"|--------------------------------------------------------------------|\n"
-			"| 1.		     NEW GAME                                        |\n"
-			"| 2.		  CONTINUE GAME                                      |\n"
-			"| 3.		     AURORS                                          |\n"
-			"| 4.			   		                             |\n"
+			"|                          1.NEW GAME                                |\n"
+			"|                        2.CONTINUE GAME                             |\n"
+			"|                           3.AURORS                                 |\n"
+			"|                           4.CONTROL                                |\n"
 			"|--------------------------------------------------------------------|\n";
 		cout << "\nChoose an action >> ";
 		choose = _getch();
@@ -56,7 +57,9 @@ int main()
 			break;
 		case '3':
 			authors();  // просто так
-			sound->stop();
+			break;
+		case '4':
+			control();
 			break;
 		default:
 			cout << "\nChoose again!\n";
