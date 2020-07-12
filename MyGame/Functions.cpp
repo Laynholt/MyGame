@@ -40,14 +40,39 @@ void letter(wchar_t* console, wchar_t* message, int32_t size_message)
 void screamer(wchar_t* console)
 {
 	int16_t rand_flag = rand() % 17;
-	int16_t katet = 25;
-	int16_t side = 60;
-	int16_t ki, si;
-	int16_t xA, yA;
+	int16_t x1A, y1A, x1B, y1C;
+	int16_t x2A, y2A, x2B, y2C;
+	int16_t bufx = 0;
 
-	ki = si = 0;
-	xA = 14;
-	yA = 5;
+	//Цвета
+	int16_t White = 0x2588;
+	int16_t Grey = 0x2591;
+	int16_t Dark_Grey = 0x2592;
+	int16_t Question = 0x00BF;
+	int16_t Face = 0x2261;
+
+	int16_t color = 0;
+
+	x1A = 44;	// Координаты верхней левой точки левого треугольника
+	y1A = 10;
+
+	x2A = 88;	// Ограничения для левого треугольника
+	y2A = 20;
+
+	y1C = 20;	// Координаты нижней левой точки правого треугольника
+	x1B = 70;
+
+	y2C = 21;	// Ограничения для правого треугольника
+	x2B = 108;
+
+	if (rand_flag <= 4)
+		color = White;
+	else if (rand_flag <= 8)
+		color = Grey;
+	else if (rand_flag <= 12)
+		color = Dark_Grey;
+	else
+		color = Question;
 
 	for (int16_t x = 0; x < iConsoleWidth; x++)
 	{
@@ -57,14 +82,49 @@ void screamer(wchar_t* console)
 				(y >= iConsoleHeight / 6) && (y <= (iConsoleHeight - iConsoleHeight / 6)))
 			{
 
-				if (x >= xA && y >= yA)
+				if (x >= x1A && y >= y1A)								// Рисуем левый треугольник
 				{
-					console[y * iConsoleWidth + x] = 0x2588;
+					if (bufx == 0 || bufx == x - 2)
+					{
+						y1A++;
+						bufx = x;
+					}
+
+					if (y <= y1C && x <= x1B)
+					{
+						console[y * iConsoleWidth + x] = color;
+					}
+					else
+					{
+						if (y >= 25 && y <= 30 && x >= 56 && x <= 96)	// Рисуем прямоугольник (в части треугольника)
+							console[y * iConsoleWidth + x] = color;
+						else
+							console[y * iConsoleWidth + x] = Face;
+					}
 				}
+
+				else if (x >= x2A && y <= y2A)							// Рисуем правый треугольник
+				{
+					if (bufx <= x - 2)
+					{
+						y2C--;
+						bufx = x;
+					}
+
+					if (y >= y2C && y >= 9 && x <= x2B)
+					{
+						console[y * iConsoleWidth + x] = color;
+					}
+					else
+						console[y * iConsoleWidth + x] = Face;
+				}
+
+				else if (y >= 25 && y <= 30 && x >= 56 && x<= 96)		// Рисуем прямоугольник
+					console[y * iConsoleWidth + x] = color;
 
 				else
 				{
-					console[y * iConsoleWidth + x] = 0x2261;
+					console[y * iConsoleWidth + x] = Face;
 				}
 			}
 			rand_flag = rand() % 17;
@@ -113,7 +173,7 @@ void map_pulling(wstring& map)
 {
 	map += L"##################################################";
 	map += L"#...........?....................#...............#";
-	map += L"#.#########......................#...#####.......#";
+	map += L"#!#########......................#...#####.......#";
 	map += L"#................###############.#...............#";
 	map += L"#................................................#";
 	map += L"#@@@@............................................#";
