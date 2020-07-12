@@ -19,6 +19,9 @@ float fDepth = 26.0f;
 int main()
 {
 	srand(time(NULL));
+	//setlocale(LC_ALL, "rus");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
 	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 	bool exit = 1;
 	char choose = ' ';
@@ -37,14 +40,14 @@ int main()
 
 	while (exit)
 	{
-		cout <<
-			"|--------------------------------------------------------------------|\n"
+		wcout <<
+			L"|--------------------------------------------------------------------|\n"
 			"|                          1.NEW GAME                                |\n"
 			"|                        2.CONTINUE GAME                             |\n"
 			"|                           3.AURORS                                 |\n"
 			"|                           4.CONTROL                                |\n"
 			"|--------------------------------------------------------------------|\n";
-		cout << "\nChoose an action >> ";
+		wcout << L"\nChoose an action >> ";
 		choose = _getch();
 		switch (choose)
 		{
@@ -62,7 +65,7 @@ int main()
 			control();
 			break;
 		default:
-			cout << "\nChoose again!\n";
+			wcout << L"\nChoose again!\n";
 			break;
 		}
 		system("pause");

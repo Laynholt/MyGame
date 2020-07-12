@@ -322,42 +322,29 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY)
 void open_map(wchar_t* console, wstring map)
 {
 	int16_t nx, nx1, ny, ny1;
+	int16_t check = 0;
+	int16_t EndX, EndY;
+	EndX = iConsoleWidth - iConsoleWidth / 5;
+	EndY = iConsoleHeight - iConsoleHeight / 6;
 
-	for (nx = (int16_t)fPlayerX, nx1 = (int16_t)fPlayerX; nx1 < iMapWidth; nx1++, nx++)
-		for (ny = (int16_t)fPlayerY, ny1 = (int16_t)fPlayerY + 13; ny1 > (int16_t)fPlayerY; ny1--, ny++)
+	for (nx = 0; nx < EndX; nx++)
+	{
+		for (ny=0; ny< EndY; ny++)
 		{
-			if (nx1 > iMapWidth)
+			check = ((int16_t)fPlayerY - EndY / 2 + ny) * iMapWidth + (int16_t)fPlayerX - EndX / 2 + nx;
+
+			if (check > 0)
 			{
-				console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = ' ';
-				continue;
-			}
-
-			if (ny1 >= iMapHeight)
-			{
-				console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = ' ';
-
-				/*int16_t EndY = ny - iMapHeight;
-				console[(ny + 2 - (int16_t)fPlayerY + EndY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = '#';*/
-
-				continue;
-			}
-
-			if (map[(ny1 - 2) * iMapWidth + nx1 - 1] == '@' || map[(ny1 - 2) * iMapWidth + nx1 - 1] == '!')
-				console[(ny + 1 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = '.';
-			else
-				console[(ny + 1 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = map[(ny1 - 2) * iMapWidth + nx1 - 1];
-
-		/*	if (ny1 * iMapWidth + nx1 <= 6000)
-			{
-				
+				//console[(ny + iConsoleWidth / 2) * iConsoleWidth + nx + iConsoleWidth / 2] = check;
 			}
 
 			else
 			{
-				console[(ny + 1 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 30] = ' ';
-			}*/
+				//console[(ny + iConsoleWidth / 2) * iConsoleWidth + nx + iConsoleWidth / 2] = ' ';
+			}
 		}
-	console[((int16_t)fPlayerX + 41) * iConsoleWidth + (int16_t)fPlayerY] = 'P';
+	}
+	console[iConsoleHeight/2 * iConsoleWidth + iConsoleWidth/2] = 'U';
 }
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
@@ -365,8 +352,8 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
 	char startTime[80];
 	time_t seconds = time(NULL);
 	strftime(startTime, 80, "%A %d %B %Y %H:%M:%S", localtime(&seconds));
-	ofstream file;
-	file.open("save.txt", ios_base::app); // запись в конец файла
+	wofstream file;
+	file.open(L"save.txt", ios_base::app); // запись в конец файла
 	file << startTime << " " << (int16_t)fPlayerX << " " << (int16_t)fPlayerY << " " << (int16_t)fPlayerA
 		<< " " << Time << " " << iObiliscCounter << endl;
 	file.close();
@@ -375,8 +362,8 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
 
 void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
 {
-	ifstream file("save.txt");
-	string line;
+	wifstream file(L"save.txt");
+	wstring line;
 	bool exit = 0;
 	int16_t iObiliscCounter, Time, menu, whil = 0;
 
@@ -390,27 +377,27 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но н
 		{
 			while (getline(file, line))
 			{
-				cout << "\nSave [" << ++whil << "] " << line;
+				wcout << L"\nSave [" << ++whil << "] " << line;
 			}
 
 			file.close();
-			file.open("save.txt");
+			file.open(L"save.txt");
 
-			cout << "\nChoose an action >> ";
+			wcout << L"\nChoose an action >> ";
 			try
 			{
-				cin >> menu;
-				cin.ignore(32767, '\n');
+				wcin >> menu;
+				wcin.ignore(32767, '\n');
 				if (cin.fail())
 				{
-					throw "The character entered is not a number!";
+					throw L"The character entered is not a number!";
 				}
 			}
 			catch (const char* exc)
 			{
-				cout << exc << endl;
-				cin.clear();
-				cin.ignore(32767, '\n');
+				wcout << exc << endl;
+				wcin.clear();
+				wcin.ignore(32767, '\n');
 			}
 
 
@@ -436,7 +423,7 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но н
 			else
 			{
 				whil = 0;
-				cout << "\nChoose again!\n";
+				wcout << L"\nChoose again!\n";
 				//system("cls");
 			}
 		}
@@ -467,6 +454,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	int16_t iRunTime = 0;							// Время бега
 	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
+	int16_t iSaveDelay = 0;							// задержка для сохранения
 	/*int16_t YOU = 'U';*/
 
 	map_pulling(map);
@@ -546,7 +534,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?' && iMessageDelay == 0)    // Символ сообщения
 		{
-			wchar_t a[5] = { 'R', 'U', 'N', '!', '?' };
+			wchar_t a[5] = { 'Б', 'Е', 'Г', 'И', '!' };
 			letter(console, a, 5);
 			_getch();
 
@@ -612,7 +600,13 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 			}
 
 			if (GetAsyncKeyState((unsigned short)'U') & 0x8000)		// Клавишей "U" сохраняем координаты и время игры
-				save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter);
+			{
+				if (iSaveDelay == 0 || iSaveDelay + 5 <= (int16_t)fStopwatch)
+				{
+					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter);
+					iSaveDelay = (int16_t)fStopwatch;
+				}
+			}
 
 			if (GetAsyncKeyState((unsigned short)'A') & 0x8000)		// Клавишей "A" поворачиваем по часовой стрелке
 				fPlayerA -= (fSpeedCamera * 0.5f) * fElapsedTime;
@@ -854,7 +848,6 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 								console[(ny + 2 - (int16_t)fPlayerY - 1) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = '#';
 								console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = map[(ny1 - 2) * iMapWidth + nx1 - 1];
 							}
-
 							continue;
 						}
 
@@ -904,8 +897,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 void authors()
 {
 	system("cls");
-	cout <<
-		"|--------------------------------------------------------------------|\n"
+	wcout <<
+		L"|--------------------------------------------------------------------|\n"
 		"|                             AUTHORS                                |\n"
 		"|               laynholt                  marco_dragan               |\n"
 		"|               https://github.com/VariableRiw/MyGame                |\n"
@@ -918,8 +911,8 @@ void control()
 {
 	system("cls");
 
-	cout <<
-		"|--------------------------------------------------------------------|\n"
+	wcout <<
+		L"|--------------------------------------------------------------------|\n"
 		"|                            W - forward                             |\n"
 		"|                            S - back                                |\n"
 		"|                            Z - run                                 |\n"

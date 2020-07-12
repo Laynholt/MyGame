@@ -11,6 +11,7 @@
 #include <vector>
 #include <audiere.h>
 #include <conio.h>
+#include <locale>
 #include <Windows.h>
 #include "resource.h"
 
