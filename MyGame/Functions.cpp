@@ -1,5 +1,7 @@
 #include "LibFunVar.h"
 
+//изменение в коде
+
 void letter(wchar_t* console, wchar_t* message, int32_t size_message)
 {
 	int32_t i = 0;
