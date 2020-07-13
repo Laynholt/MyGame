@@ -14,7 +14,6 @@
 #include <Windows.h>
 #include <io.h>
 #include <fcntl.h>
-#include "resource.h"
 
 using namespace std;
 

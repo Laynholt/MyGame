@@ -321,30 +321,65 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY)
 
 void open_map(wchar_t* console, wstring map)
 {
+	int16_t temp = 0;
 	int16_t nx, nx1, ny, ny1;
 	int16_t check = 0;
 	int16_t EndX, EndY;
 	EndX = iConsoleWidth - iConsoleWidth / 5;
 	EndY = iConsoleHeight - iConsoleHeight / 6;
 
-	for (nx = 0; nx < EndX; nx++)
-	{
-		for (ny = 0; ny < EndY; ny++)
+	for (nx = (int16_t)fPlayerX + iConsoleWidth / 5, nx1 = (int16_t)fPlayerX + iConsoleWidth / 5; nx1 < (int16_t)fPlayerX + EndX - 1; nx1++, nx++)
+		for (ny = (int16_t)fPlayerY, ny1 = (int16_t)fPlayerY + EndY; ny1 > (int16_t)fPlayerY + 2; ny1--, ny++)
 		{
-			check = ((int16_t)fPlayerY - EndY / 2 + ny) * iMapWidth + (int16_t)fPlayerX - EndX / 2 + nx;
+			temp = (ny1 - (iConsoleHeight / 2 - 3)) * iMapWidth + nx1 - iConsoleWidth / 2 + 1;
 
-			if (check > 0)
+			if (nx1 - (iConsoleWidth / 2 - 2) > iMapWidth)
 			{
-				//console[(ny + iConsoleWidth / 2) * iConsoleWidth + nx + iConsoleWidth / 2] = check;
+				console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = ' ';
+				continue;
+			}
+
+			if (temp <= iMapHeight * iMapWidth && temp >= 0 && nx1 > (iConsoleWidth / 2 - 2))
+			{
+				if (map[temp] == '@' || map[temp] == '!') // Сюда добавлять те символы, 
+					console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = '.';	// которые не нужно отображать на карте
+				else
+					console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = map[temp];
 			}
 
 			else
 			{
-				//console[(ny + iConsoleWidth / 2) * iConsoleWidth + nx + iConsoleWidth / 2] = ' ';
+				console[(ny + 2 - (int16_t)fPlayerY) * iConsoleWidth + nx - (int16_t)fPlayerX + 1] = ' ';
 			}
 		}
+
+	// Обводка карты
+	int16_t iMapCorner1 = 0x2551;
+	int16_t iMapCorner2 = 0x2550;
+	for (nx = (iConsoleWidth / 5); nx < EndX; nx++)
+	{
+		for (ny = 1; ny < EndY; ny++)
+		{
+			if (nx == (iConsoleWidth / 5))							// Левая вертикальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+			else if (ny == 1 && nx > (iConsoleWidth / 5))			// Верхняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (ny == EndY - 1 && nx > (iConsoleWidth / 5))	// Нижняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (nx == EndX - 1)								// Правая вертикольная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+			if (nx == (iConsoleWidth / 5) && ny == 1)
+				console[ny * iConsoleWidth + nx] = 0x2554;			// Левый верний угол
+			else if (nx == EndX - 1 && ny == 1)
+				console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+			else if (nx == (iConsoleWidth / 5) && ny == EndY - 1)
+				console[ny * iConsoleWidth + nx] = 0x255A;			// Левый нижний угол
+			else if (nx == EndX - 1 && ny == EndY - 1)
+				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+		}
 	}
-	console[iConsoleHeight / 2 * iConsoleWidth + iConsoleWidth / 2] = 'U';
+	console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 'A';
 }
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
@@ -456,6 +491,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
 	int16_t iSaveDelay = 0;							// задержка для сохранения
 	int32_t iWalkDelay = 0;							// Задержка для ходьбы
+	bool bMapIsOpen = false;						// Признак открытой карты
+	int16_t iMapDaley = 0;
 	//float bufPlayerA = fPlayerA;					// для адаптивной карты
 	/*int16_t YOU = 'U';*/
 
@@ -513,9 +550,20 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 			}
 		}
 
-		else if (GetAsyncKeyState((unsigned short)'X') & 0x8000)		// Клавишей "U" сохраняем координаты и время игры
+		else if (GetAsyncKeyState((unsigned short)'X') & 0x8000 || bMapIsOpen == true)		// Клавишей "X" показываем карту
 		{
-			open_map(console, map);
+			if (!bMapIsOpen)
+			{
+				open_map(console, map);
+				bMapIsOpen = true;
+			}
+
+			else
+			{
+				if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
+					|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
+						bMapIsOpen = false;
+			}
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreamDelay <= 25)    // Символ скримера
