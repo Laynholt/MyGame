@@ -479,22 +479,22 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	DWORD dwBytesWritten = 0;
 
 	wstring map;									// Карта
-	float fStopwatch = Time;						// Таймер
-	int16_t iScreamDelay = 0;						// Задержка для воспроизведения скримера
-	int16_t iRunDelay = 0;							// Задержка для востановления выносливости
+
 	bool bZFlag = false;							// Флаг того, что кнопку нажали
 	bool bMinimap = true;							// Миникарта вкл
-	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
+	bool bMapIsOpen = false;						// Признак открытой карты
+
+	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
+
+	int16_t iScreamDelay = 0;						// Задержка для воспроизведения скримера
 	int16_t iRunTime = 0;							// Время бега
+	int16_t iRunDelay = 0;							// Задержка для востановления выносливости
+	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
 	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
 	int16_t iSaveDelay = 0;							// задержка для сохранения
 	int32_t iWalkDelay = 0;							// Задержка для ходьбы
-	bool bMapIsOpen = false;						// Признак открытой карты
-	int16_t iMapDaley = 0;
-	//float bufPlayerA = fPlayerA;					// для адаптивной карты
-	/*int16_t YOU = 'U';*/
 
 	map_pulling(map);
 
@@ -543,11 +543,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 	{
 		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 5)    // Символ конца игры
 		{
-			if (game_over(console, 0x256C))
-			{
-				//delete[] console;
-				//return;
-			}
+			game_over(console, 0x256C);
 		}
 
 		else if (GetAsyncKeyState((unsigned short)'X') & 0x8000 || bMapIsOpen == true)		// Клавишей "X" показываем карту
@@ -614,8 +610,6 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 				}
 
 			}
-			/*fPlayerX = 5.0f;													// Телепорт игрока
-			fPlayerY = 80.0f;*/
 		}
 
 		else
@@ -658,20 +652,10 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 			}
 
 			if (GetAsyncKeyState((unsigned short)'A') & 0x8000)		// Клавишей "A" поворачиваем по часовой стрелке
-			{
 				fPlayerA -= (fSpeedCamera * 0.5f) * fElapsedTime;
-				/*bufPlayerA -= (fSpeedCamera * 0.5f) * fElapsedTime;
-				if (bufPlayerA > 6.27f || bufPlayerA < -6.27f)
-					bufPlayerA = 0.0f;*/
-			}
 
 			if (GetAsyncKeyState((unsigned short)'D') & 0x8000)		// Клавишей "D" поворачиваем против часовой стрелки
-			{
 				fPlayerA += (fSpeedCamera * 0.5f) * fElapsedTime;
-				/*bufPlayerA += (fSpeedCamera * 0.5f) * fElapsedTime;
-				if (bufPlayerA > 6.27f || bufPlayerA < -6.27f)
-					bufPlayerA = 0.0f;*/
-			}
 
 			if (GetAsyncKeyState((unsigned short)'W') & 0x8000)		// Клавишей "W" идём вперёд
 			{
