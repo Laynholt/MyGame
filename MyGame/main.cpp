@@ -38,8 +38,8 @@ int main()
 	sound->play();															// Проигрываем наш звук
 	sound->setVolume(0.5f);
 	sound->setRepeat(true);
-	
-		for (j = 0; j < 20; j++){
+	/*
+	for (j = 0; j < 20; j++){
 		system("cls");
 		for (i = 0; i < q; i++){
 			wcout << endl;
@@ -69,7 +69,7 @@ int main()
 		q--;
 		q1++;
 	}
-	system("cls");
+	system("cls");*/
 
 	while (exit)
 	{
