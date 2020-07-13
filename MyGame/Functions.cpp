@@ -500,14 +500,14 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 
 	// Воспроизводим музыку
 	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
-	audiere::OutputStreamPtr sound = OpenSound(device, "sounds/Apocryphos, Kammarheit, Atrium Carceri - Cavern of Igneous Flame.mp3", true); // Создаем поток для нашего звука
+	audiere::OutputStreamPtr sound = OpenSound(device, "sounds/apocryphos.mp3", true); // Создаем поток для нашего звука
 	sound->play();															// Проигрываем наш звук
 	sound->setVolume(0.5f);
 	sound->setRepeat(true);
 
 	// Открываем файл со звуком шагов
 	audiere::AudioDevicePtr d1 = audiere::OpenDevice();
-	audiere::OutputStreamPtr s1 = OpenSound(d1, "sounds/stone_walk3.ogg", false);		// Создаем поток для нашего звука
+	audiere::OutputStreamPtr s1 = OpenSound(d1, "sounds/walk.ogg", false);		// Создаем поток для нашего звука
 
 	// Открываем файл с шепотом
 	audiere::AudioDevicePtr d2 = audiere::OpenDevice();
@@ -515,7 +515,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 
 	// Открываем файл с зловещими звуками :D
 	audiere::AudioDevicePtr d3 = audiere::OpenDevice();
-	audiere::OutputStreamPtr s3 = OpenSound(d3, "sounds/ominous-sounds.ogg", false);	// Создаем поток для нашего звука
+	audiere::OutputStreamPtr s3 = OpenSound(d3, "sounds/ominous.ogg", false);	// Создаем поток для нашего звука
 
 	// Открываем файл с голосом
 	audiere::AudioDevicePtr d4 = audiere::OpenDevice();
@@ -523,7 +523,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сам
 
 	// Открываем файл со смехом
 	audiere::AudioDevicePtr d5 = audiere::OpenDevice();
-	audiere::OutputStreamPtr s5 = OpenSound(d5, "sounds/strashnye-zvuki-dyavolskiy-smeh.ogg", false);			// Создаем поток для нашего звука
+	audiere::OutputStreamPtr s5 = OpenSound(d5, "sounds/smeh.ogg", false);			// Создаем поток для нашего звука
 
 	// Открываем файл со звуком портала
 	audiere::AudioDevicePtr d6 = audiere::OpenDevice();

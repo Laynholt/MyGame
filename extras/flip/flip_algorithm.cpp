@@ -11,7 +11,7 @@ using namespace std;
 
 int wmain(){
 	const int N = 29, //строк
-		      M = 90; // символы в строке
+		      M = 93; // символы в строке
 	// переключение стандартного потока ввода и вывода в формат Юникода
 	_setmode(_fileno(stdout), _O_U16TEXT);
 	_setmode(_fileno(stdin), _O_U16TEXT);
@@ -37,8 +37,12 @@ int wmain(){
 	}
 	
 	for (int j = 0; j < M; j++) {
-		for (i = 0; i < N; i++) out << read[i][j];
+		for (i = 0; i < N; i++) {
+			out << read[i][j];
+		//	wcout << read[i][j];
+		}
 		out << endl;
+		//wcout << endl;
 	}
 
 	in.close();
