@@ -53,16 +53,20 @@ int main()
 		switch (choose)
 		{
 		case '1':
+			wcout << L"Новая игра" << endl;
 			sound->stop();
 			game();  //запуск игры
 			break;
 		case '2':
+			wcout << L"Продолжить игру" << endl;
 			continue_game(sound); //взятие сохраненией, сохраниться можно на U, либо на обелиске
 			break;
 		case '3':
+			wcout << L"Разработчики" << endl;
 			authors();  // просто так
 			break;
 		case '4':
+			wcout << L"Управление" << endl;
 			control();
 			break;
 		default:
