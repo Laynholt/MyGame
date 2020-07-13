@@ -2,20 +2,30 @@
 #define _LIBFUNVAR_H_
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <io.h>
-#include <fcntl.h>
+// Для локали
+#include <io.h>      // для функции _setmode
+#include <fcntl.h>   // для константы _O_U16TEXT
+#include <codecvt>   // для работы с фасетом codecvt_utf8 локали
+// Контейнеры
+#include <vector>
+#include <string>
+// Время
 #include <ctime>
 #include <chrono>
-#include <vector>
+// Ввод/Вывод + Потоки
 #include <conio.h>
-#include <cstdint>
 #include <fstream>
 #include <iostream>
+// Фиксированный формат данных
+#include <cstdint>
+// Аудио + Графика
 #include <audiere.h>
 #include <Windows.h>
+// Алгоритмы
 #include <algorithm>
+// Для иконки
+#include "resource.h"
 
-#include "resource1.h"
 
 using namespace std;
 
