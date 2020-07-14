@@ -17,8 +17,30 @@ void letter(wchar_t* console)
 	B = iConsoleWidth - iConsoleWidth / 5;
 	C = iConsoleHeight / 6;
 	D = iConsoleHeight - iConsoleHeight / 6;
+
+	// Выбираем, какое сообщение загружать
+	if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 0; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 1; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 2; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 3; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 4; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 5; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 6; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 7; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 8; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 9; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 10; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 11; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 12; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 13; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 14; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 15; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 16; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 17; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 18; }
+	else if ((int16_t)fPlayerX == 1 && (int16_t)fPlayerY == 1) { n = 19; }
 	
-	wifstream in(path[10]);
+	wifstream in(path[n]);
 	if (!in.is_open())
 		return;
 
@@ -33,6 +55,9 @@ void letter(wchar_t* console)
 		i++;
 	}
 	in.close();
+
+	if (read.empty())
+		return;
 
 	i = 0;
 
