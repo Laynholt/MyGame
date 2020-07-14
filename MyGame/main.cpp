@@ -25,9 +25,13 @@ int main()
 	srand(time(NULL));
 	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 	bool exit = 1;
-	char choose = ' ';
+	//char choose = ' ';
 	int16_t index = 0;
 	int32_t value = 0;
+
+	int8_t choose = 1;
+	const int8_t num_str = 4;
+	wstring arr_for_meny[num_str] = {L"Новая игра", L"Продолжить игру", L"Разработчики", L"Управление"};
 
 	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze");		// Меняем название консоли
 	SetConsoleTitle(ConsoleTitle);
@@ -71,42 +75,32 @@ int main()
 	}
 	system("cls");*/
 
+	color_meny(choose, arr_for_meny, num_str);
+
 	while (exit)
 	{
-		wcout <<
-			L"|--------------------------------------------------------------------|\n"
-			"|                          1.Новая игра                              |\n"
-			"|                        2.Продолжить игру                           |\n"
-			"|                         3.Разработчики                             |\n"
-			"|                          4.Управление                              |\n"
-			"|--------------------------------------------------------------------|\n";
-		wcout << L"\nВыберете опцию >> ";
-		choose = _getch();
-		switch (choose)
+		switch (_getch())
 		{
-		case '1':
-			wcout << L"Новая игра" << endl;
-			sound->stop();
-			game();  //запуск игры
+		case 72: case 'w':
+			choose = (choose > 1) ? --choose : 1;
+			system("cls");
+			color_meny(choose, arr_for_meny, num_str);
 			break;
-		case '2':
-			wcout << L"Продолжить игру" << endl;
-			continue_game(sound); //взятие сохраненией, сохраниться можно на U, либо на обелиске
+		case 80: case 's':
+			choose = (choose < 4) ? ++choose : 4;
+			system("cls");
+			color_meny(choose, arr_for_meny, num_str);
 			break;
-		case '3':
-			wcout << L"Разработчики" << endl;
-			authors();  // просто так
-			break;
-		case '4':
-			wcout << L"Управление" << endl;
-			control();
-			break;
-		default:
-			wcout << L"\nНекорректный выбор! Попробуйте ещё раз.\n";
+		case 13:
+			if (choose == 1) { sound->stop(); game(); } //запуск игры
+			else if (choose == 2) { continue_game(sound); } //взятие сохраненией, сохраниться можно на U
+			else if (choose == 3) { authors(); }
+			else if (choose == 4) { control(); }
+			choose = 1;
+			system("cls");
+			color_meny(choose, arr_for_meny, num_str);
 			break;
 		}
-		system("pause");
-		system("cls");
 	}
 	return 0;
 }

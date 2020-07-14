@@ -51,6 +51,8 @@ extern float fDepth;
 // преобразования символов при чтении из файла в кодировке UTF-8
 const locale utf8_locale = locale(locale(), new codecvt_utf8<wchar_t>());
 
+void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str);
+
 void map_pulling(wstring& map);
 bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 
