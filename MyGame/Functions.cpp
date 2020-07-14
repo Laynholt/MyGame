@@ -420,7 +420,7 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 
 			else if (whil > 0)
 			{
-				wcout << L"\n\nВыберете нужное сохранение >> ";
+				wcout << L"\n\nВыберете нужное сохранение [Введите 0, для возврата в главное меню]>> ";
 				try
 				{
 					wcin >> menu;
@@ -437,8 +437,12 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 					wcin.ignore(32767, '\n');
 				}
 
+				if (menu == 0)
+				{
+					return;
+				}
 
-				if (menu <= whil && menu > 0)
+				else if (menu <= whil && menu > 0)
 				{
 					/*file.seekg(0, file.beg);*/
 					for (int16_t i = 0; i < menu; i++)
