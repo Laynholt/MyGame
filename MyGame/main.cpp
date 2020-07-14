@@ -11,7 +11,7 @@ float fPlayerXBuf = fPlayerX;
 float fPlayerYBuf = fPlayerY;
 float fPlayerA = 0.0f;									// Направление игрока
 float fSpeed = SPEED;									// Скорость передвижения
-float fSpeedCamera = 4.0f;								// Скорость камеры
+float fSpeedCamera = 5.0f;								// Скорость камеры
 
 float fFoV = 3.14159f / 1.78f;							// Угол обзора
 float fDepth = 26.0f;
@@ -42,38 +42,6 @@ int main()
 	sound->play();															// Проигрываем наш звук
 	sound->setVolume(0.5f);
 	sound->setRepeat(true);
-
-	/*for (j = 0; j < 20; j++){
-		system("cls");
-		for (i = 0; i < q; i++){
-			wcout << endl;
-		}
-		for (i = 0; i < 67; i++){
-			wcout << " ";
-		}
-		wcout << "Lost in the Maze";
-		Sleep(100);
-		q++;
-	}
-	q = 67;
-	for (j = 0; j < 20; j++){
-		system("cls");
-		for (i = 0; i < 20; i++){
-			wcout << endl;
-		}
-		for (i = 0; i < q; i++){
-			wcout << " ";
-		}
-		wcout << "Lost in ";
-		for (i = 0; i < q1; i++){
-			wcout << "  ";
-		}
-		wcout << "the Maze";
-		Sleep(150);
-		q--;
-		q1++;
-	}
-	system("cls");*/
 
 	color_meny(choose, arr_for_meny, num_str);
 

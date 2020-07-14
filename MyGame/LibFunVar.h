@@ -29,7 +29,7 @@
 
 using namespace std;
 
-#define SPEED 4
+#define SPEED 5
 
 extern int16_t iConsoleWidth;				// Ширина консоли
 extern int16_t iConsoleHeight;				// Высота консоли
