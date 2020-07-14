@@ -234,9 +234,9 @@ bool game_over(wchar_t* console, wchar_t a)
 void map_pulling(wstring& map)
 {
 	map += L"####################################################################################################";
-	map += L"#.!.......................OO.....................................................................!?#";
-	map += L"#.............?...............................................?....................................#";
-	map += L"#..................................................................................................#";
+	map += L"#.........................OO.....................................................................!?#";
+	map += L"#!............?...#...........................................?....................................#";
+	map += L"###################................................................................................#";
 	map += L"#..................................................................................................#";
 	map += L"#.................?................................................................................#";
 	map += L"#.@@@@@@@@@@.....???....?OOOOOOO...................................................................#";
@@ -490,6 +490,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 	bool bZFlag = false;							// Флаг того, что кнопку нажали
 	bool bMinimap = true;							// Миникарта вкл
 	bool bMapIsOpen = false;						// Признак открытой карты
+	bool bScreamerOn = false;						// Признак скримера
+	bool bScreamShock = true;
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -570,17 +572,22 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 			}
 		}
 
-		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreamDelay <= 10)    // Символ скримера
+		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreamDelay <= 10 && bScreamShock == true)    // Символ скримера
 		{
 			if (iScreamDelay == 0)
 			{
 				screamer(console);
 				s5->play();
 				s5->setVolume(0.6f);
+				bScreamerOn = true;
 			}
 
 			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			{
 				iScreamDelay = 100;
+				bScreamerOn = false;
+				bScreamShock = false;
+			}
 
 			iScreamDelay++;
 		}
@@ -629,6 +636,11 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				iMessageDelay = 0;
 			}
 
+			if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '!')	// Для повторого скримера
+			{
+				bScreamShock = true;
+			}
+
 			aTimePoint2 = chrono::system_clock::now();
 			chrono::duration<float> elapsedTime = aTimePoint2 - aTimePoint1;
 			aTimePoint1 = aTimePoint2;
@@ -658,13 +670,13 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				}
 			}
 
-			if (GetAsyncKeyState((unsigned short)'A') & 0x8000)		// Клавишей "A" поворачиваем по часовой стрелке
+			if ((GetAsyncKeyState((unsigned short)'A') & 0x8000) && bScreamerOn == false)	// Клавишей "A" поворачиваем по часовой стрелке
 				fPlayerA -= (fSpeedCamera * 0.5f) * fElapsedTime;
 
-			if (GetAsyncKeyState((unsigned short)'D') & 0x8000)		// Клавишей "D" поворачиваем против часовой стрелки
+			if ((GetAsyncKeyState((unsigned short)'D') & 0x8000) && bScreamerOn == false)	// Клавишей "D" поворачиваем против часовой стрелки
 				fPlayerA += (fSpeedCamera * 0.5f) * fElapsedTime;
 
-			if (GetAsyncKeyState((unsigned short)'W') & 0x8000)		// Клавишей "W" идём вперёд
+			if ((GetAsyncKeyState((unsigned short)'W') & 0x8000) && bScreamerOn == false)	// Клавишей "W" идём вперёд
 			{
 				if (GetAsyncKeyState((unsigned short)'Z') & 0x8000)
 				{
@@ -714,7 +726,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				}
 			}
 
-			if (GetAsyncKeyState((unsigned short)'S') & 0x8000)		// Клавишей "S" идём назад
+			if ((GetAsyncKeyState((unsigned short)'S') & 0x8000) && bScreamerOn == false)	// Клавишей "S" идём назад
 			{
 				fPlayerX -= sinf(fPlayerA) * fSpeed * fElapsedTime;
 				fPlayerY -= cosf(fPlayerA) * fSpeed * fElapsedTime;
