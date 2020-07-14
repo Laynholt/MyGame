@@ -403,54 +403,66 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 		{
 			while (getline(file, line))
 			{
-				wcout << L"\nСохраниние [" << ++whil << "] " << line;
+				if (!line.empty())
+					wcout << L"\nСохраниние [" << ++whil << "] " << line;
 			}
 
 			file.close();
 			file.open(L"save.txt");
 
-			wcout << L"\n\nВыберете нужное сохранение >> ";
-			try
+			if (whil == 0)
 			{
-				wcin >> menu;
-				wcin.ignore(32767, '\n');
-				if (cin.fail())
-				{
-					throw L"Выбранного Вами сохранения не существует!";
-				}
-			}
-			catch (const char* exc)
-			{
-				wcout << exc << endl;
-				wcin.clear();
-				wcin.ignore(32767, '\n');
-			}
-
-
-			if (menu <= whil && menu > 0)
-			{
-				/*file.seekg(0, file.beg);*/
-				for (int16_t i = 0; i < menu; i++)
-				{
-					for (int16_t j = 0; j < 5; j++)
-						file >> line;
-
-					file >> fPlayerX;
-					file >> fPlayerY;
-					file >> fPlayerA;
-					file >> Time;
-					file >> iObiliscCounter;
-				}
-
-
+				wcout << L"\nУ вас нет сохранений";
+				wcout << L"\nНажмите Enter, чтобы начать новую игру.";
+				_getch();
 				exit = 1;
 			}
 
-			else
+			else if (whil > 0)
 			{
-				whil = 0;
-				wcout << L"\nПопробуйте еще раз!\n";
-				//system("cls");
+				wcout << L"\n\nВыберете нужное сохранение >> ";
+				try
+				{
+					wcin >> menu;
+					wcin.ignore(32767, '\n');
+					if (cin.fail())
+					{
+						throw L"Выбранного Вами сохранения не существует!";
+					}
+				}
+				catch (const char* exc)
+				{
+					wcout << exc << endl;
+					wcin.clear();
+					wcin.ignore(32767, '\n');
+				}
+
+
+				if (menu <= whil && menu > 0)
+				{
+					/*file.seekg(0, file.beg);*/
+					for (int16_t i = 0; i < menu; i++)
+					{
+						for (int16_t j = 0; j < 5; j++)
+							file >> line;
+
+						file >> fPlayerX;
+						file >> fPlayerY;
+						file >> fPlayerA;
+						file >> Time;
+						file >> iObiliscCounter;
+					}
+
+
+					exit = 1;
+				}
+
+				else
+				{
+					whil = 0;
+					wcout << L"\nПопробуйте еще раз!\n";
+					//system("cls");
+				}
 			}
 		}
 	}
