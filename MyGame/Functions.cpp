@@ -19,15 +19,15 @@ void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 	}
 }
 
-void letter(wchar_t* console)
+void letter(wchar_t* console, int16_t iObeliscCount)
 {
 	int32_t i = 0, j = 0, n = 0;
 	int16_t A, B, C, D;
 							// Фразы майора
-	wstring path[20] = { L"text/maior/begin.txt", L"text/maior/ob1.txt", L"text/maior/ob2.txt", L"text/maior/obt3.txt", L"text/maior/ob4.txt",
+	wstring path[20] = { L"text/maior/begin.txt", L"text/maior/ob1.txt", L"text/maior/ob2.txt", L"text/maior/ob3.txt", L"text/maior/ob4.txt",
 		L"text/letters/let1.txt", L"text/letters/let2.txt", L"text/letters/let3.txt", // Письма
 		L"text/diaries/da3_1.txt", L"text/diaries/da5_1.txt", L"text/diaries/da5_2.txt", L"text/diaries/da8_1.txt", L"text/diaries/da10_1.txt", 
-		L"text/diaries/da10_2.txt", L"text/diaries/da10_3.txt", L"text/diaries/da10_4.txt", L"text/diaries/da42_1.txt", L"text/diaries/da42_1.txt", 
+		L"text/diaries/da10_2.txt", L"text/diaries/da10_3.txt", L"text/diaries/da10_4.txt", L"text/diaries/da42_1.txt", L"text/diaries/da42_2.txt", 
 		L"text/diaries/da87_S.txt",		// Дневники
 		L"text/bandersnatch/mon.txt" }; // Монолог
 	const int16_t M = 29; // строк
@@ -39,9 +39,9 @@ void letter(wchar_t* console)
 
 	// Выбираем, какое сообщение загружать
 	if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 8 && (int16_t)fPlayerY <= 9) { n = 0; }  
-	else if ((int16_t)fPlayerX >= 17 && (int16_t)fPlayerX <= 18 && (int16_t)fPlayerY >= 52 && (int16_t)fPlayerY <= 53) { n = 1; }
+	else if ((int16_t)fPlayerX >= 17 && (int16_t)fPlayerX <= 18 && (int16_t)fPlayerY >= 52 && (int16_t)fPlayerY <= 53 && iObeliscCount == 1) { n = 1; }
 	else if ((int16_t)fPlayerX >= 31 && (int16_t)fPlayerX <= 32 && (int16_t)fPlayerY >= 96 && (int16_t)fPlayerY <= 97) { n = 2; }
-	else if ((int16_t)fPlayerX >= 109 && (int16_t)fPlayerX <= 110 && (int16_t)fPlayerY >= 60 && (int16_t)fPlayerY <= 61) { n = 3; }
+	else if ((int16_t)fPlayerX >= 109 && (int16_t)fPlayerX <= 110 && (int16_t)fPlayerY >= 60 && (int16_t)fPlayerY <= 62) { n = 3; }
 	else if ((int16_t)fPlayerX >= 86 && (int16_t)fPlayerX <= 87 && (int16_t)fPlayerY >= 13 && (int16_t)fPlayerY <= 14) { n = 4; }
 
 	else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 53 && (int16_t)fPlayerY <= 54) { n = 5; }
@@ -49,12 +49,12 @@ void letter(wchar_t* console)
 	else if ((int16_t)fPlayerX >= 64 && (int16_t)fPlayerX <= 65 && (int16_t)fPlayerY >= 21 && (int16_t)fPlayerY <= 22) { n = 7; }
 
 	else if ((int16_t)fPlayerX >= 33 && (int16_t)fPlayerX <= 34 && (int16_t)fPlayerY >= 1 && (int16_t)fPlayerY <= 2) { n = 8; }
-	else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 74 && (int16_t)fPlayerY <= 75) { n = 9; }
+	else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 75 && (int16_t)fPlayerY <= 76) { n = 9; }
 	else if ((int16_t)fPlayerX >= 162 && (int16_t)fPlayerX <= 163 && (int16_t)fPlayerY >= 98 && (int16_t)fPlayerY <= 99) { n = 10; }
 	else if ((int16_t)fPlayerX >= 182 && (int16_t)fPlayerX <= 183 && (int16_t)fPlayerY >= 98 && (int16_t)fPlayerY <= 99) { n = 11; }
 	else if ((int16_t)fPlayerX >= 34 && (int16_t)fPlayerX <= 35 && (int16_t)fPlayerY >= 56 && (int16_t)fPlayerY <= 57) { n = 12; }
 	else if ((int16_t)fPlayerX >= 46 && (int16_t)fPlayerX <= 47 && (int16_t)fPlayerY >= 38 && (int16_t)fPlayerY <= 39) { n = 13; }
-	else if ((int16_t)fPlayerX >= 122 && (int16_t)fPlayerX <= 123 && (int16_t)fPlayerY >= 50 && (int16_t)fPlayerY <= 51) { n = 14; }
+	else if ((int16_t)fPlayerX >= 112 && (int16_t)fPlayerX <= 113 && (int16_t)fPlayerY >= 50 && (int16_t)fPlayerY <= 51) { n = 14; }
 	else if ((int16_t)fPlayerX >= 198 && (int16_t)fPlayerX <= 199 && (int16_t)fPlayerY >= 10 && (int16_t)fPlayerY <= 11) { n = 15; }
 	else if ((int16_t)fPlayerX >= 33 && (int16_t)fPlayerX <= 34 && (int16_t)fPlayerY >= 19 && (int16_t)fPlayerY <= 20) { n = 16; }
 	else if ((int16_t)fPlayerX >= 82 && (int16_t)fPlayerX <= 83 && (int16_t)fPlayerY >= 7 && (int16_t)fPlayerY <= 8) { n = 17; }
@@ -252,7 +252,7 @@ void map_pulling(wstring& map)
 	map += L"#....#..........................#.....................##............##.........@@@@@@@##################################################################################################################";
 	map += L"#....#..........................#..............................................@@@@@@@#.....................#.......................#.......................#.......................#.................?#";
 	map += L"#....#..........................#..............................................@@@@@@@#..................#.....#.................#.....#.................#.....#.................#.....#...............#";
-	map += L"#....#..........................#.......!..................######........######@@@O@@@?S..#...........#...........#...........#...........#...........#...........#...........#..........#.............#";
+	map += L"#....#..........................#.......!..................######........######@@@O@@@?M..#...........#...........#...........#...........#...........#...........#...........#..........#.............#";
 	map += L"#....#..........................#..............................................@@@@@@@#......#.....#.................#.....#.................#.....#.................#.....#...............#...........#";
 	map += L"#....#..........................#..............................................@@@@@@@#.........#.......................#.......................#.......................#....................#.........#";
 	map += L"#....#..........................#.....................##............##.........@@@@@@@#############################################################################################...........#........#";
@@ -336,7 +336,7 @@ void map_pulling(wstring& map)
 	map += L"#....#......#......#......#..#...........................................................................................................................#........#...................#....#.....#.....#";
 	map += L"#....................######################################################################################################################################NNNNNNN#.....!.......#.....#......!.........#";
 	map += L"#.....#.......#..........@@@@@@##.....................................#.....................................#...............!.....................................#...................#................#";
-	map += L"#........................@@@O@@?S..................#...............................................#......................................#.......................#........#..........#................#";
+	map += L"#........................@@@O@@?M..................#...............................................#......................................#.......................#........#..........#................#";
 	map += L"#...#...#......#.........@@@@@@##..................................!...............#.....................!...............#....................................#...#?..................#?.......#.......#";
 	map += L"########################################################################################################################################################################################################";
 
@@ -612,8 +612,9 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 		{
 			game_over(console, 0x256C);
 		}
-
-		else if (GetAsyncKeyState((unsigned short)'X') & 0x8000 || bMapIsOpen == true)		// Клавишей "X" показываем карту
+																							// Клавишей "X" показываем карту
+		else if ((GetAsyncKeyState((unsigned short)'X') & 0x8000 || bMapIsOpen == true) && bScreamerOn == false 
+			&& map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?')
 		{
 			if (!bMapIsOpen)
 			{
@@ -651,11 +652,13 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?' && iMessageDelay == 0)    // Символ сообщения
 		{
-			letter(console);
+			letter(console, iObiliscCounter);
 			_getch();
 
-			if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
-				iMessageDelay++;
+			if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
+				|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
+					if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
+						iMessageDelay++;
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == 'O')	// Обелиск
@@ -673,7 +676,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				{
 					del = ((int16_t)fPlayerY - 3 + j) * iMapWidth + (int16_t)fPlayerX - 3 + i;
 
-					if (del >= 0)
+					if (del >= 0 && del < iMapHeight*iMapWidth)
 					{
 						if (map[del] == '@')
 							map[del] = '.';
