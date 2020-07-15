@@ -30,6 +30,7 @@
 using namespace std;
 
 #define SPEED 5
+#define TURBO_BOOST 10
 
 extern int16_t iConsoleWidth;				// Ширина консоли
 extern int16_t iConsoleHeight;				// Высота консоли
