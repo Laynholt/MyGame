@@ -19,9 +19,77 @@ void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 	}
 }
 
-void letter(wchar_t* console, int16_t iObeliscCount)
+void message_info(wchar_t* console, bool AllMessages[])
 {
-	int32_t i = 0, j = 0, n = 0;
+	int16_t i = 0, j = 1, k = 0;
+	int16_t nx, nx1, ny, ny1;
+	wstring a = { L"Записка № " };
+	wstring b = { L" найдена   " };
+	wstring c = { L" не найдена" };
+
+	for (nx = 1; nx < 24; nx++, i++)
+	{
+		for (ny = 17; ny < 31; ny++)
+		{	
+			if (nx == i + 1 && nx <= a.length() && ny >= 17)
+				console[ny * iConsoleWidth + nx] = a[i];
+			else if (nx >= a.length() + 1 && nx <= a.length() + 2 && ny >= 17)
+			{
+				console[ny * iConsoleWidth + nx] = '0' + j;
+				if (j == 9)
+					j = 0;
+				else if (ny == 29)
+					j = 16;
+				j++;
+			}
+
+			else if (AllMessages[ny - 17] == true)
+			{
+				console[ny * iConsoleWidth + nx] = b[k];
+			}
+
+			else if (AllMessages[ny - 17] == false)
+			{
+				console[ny * iConsoleWidth + nx] = c[k];
+			}
+		}
+
+		if (nx >= 13)
+			k++;
+	}
+
+	// Обводка окна
+	int16_t iMapCorner1 = 0x2551;
+	int16_t iMapCorner2 = 0x2550;
+	for (nx = 0; nx < 25; nx++)
+	{
+		for (ny = 16; ny < 32; ny++)
+		{
+			if (nx == 0)											// Левая вертикальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+			else if (ny == 16)										// Верхняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (ny == 31)										// Нижняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (nx == 24)										// Правая вертикольная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+			if (nx == 0 && ny == 16)
+				console[ny * iConsoleWidth] = 0x2554;				// Левый верний угол
+			else if (nx == 24 && ny == 16)
+				console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+			else if (nx == 0 && ny == 31)
+				console[ny * iConsoleWidth] = 0x255A;				// Левый нижний угол
+			else if (nx == 24 && ny == 31)
+				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+		}
+	}
+}
+
+int16_t letter(wchar_t* console, int16_t iObeliscCount)
+{
+	int16_t n = 0;
+	int32_t i = 0, j = 0;
 	int16_t A, B, C, D;
 							// Фразы майора
 	wstring path[20] = { L"text/maior/begin.txt", L"text/maior/ob1.txt", L"text/maior/ob2.txt", L"text/maior/ob3.txt", L"text/maior/ob4.txt",
@@ -67,7 +135,7 @@ void letter(wchar_t* console, int16_t iObeliscCount)
 	
 	wifstream in(path[n]);
 	if (!in.is_open())
-		return;
+		return -1;
 
 	in.imbue(utf8_locale);	 // связываем наш поток с нужной локалью
 
@@ -82,7 +150,7 @@ void letter(wchar_t* console, int16_t iObeliscCount)
 	in.close();
 
 	if (read.empty())
-		return;
+		return -1;
 
 	i = 0;
 
@@ -104,6 +172,8 @@ void letter(wchar_t* console, int16_t iObeliscCount)
 		}
 		j = 0;
 	}
+
+	return n - 5;
 }
 
 void screamer(wchar_t* console)
@@ -252,9 +322,9 @@ void map_pulling(wstring& map)
 	map += L"#....#..........................#.....................##............##.........@@@@@@@##################################################################################################################";
 	map += L"#....#..........................#..............................................@@@@@@@#.....................#.......................#.......................#.......................#.................?#";
 	map += L"#....#..........................#..............................................@@@@@@@#..................#.....#.................#.....#.................#.....#.................#.....#...............#";
-	map += L"#....#..........................#.......!..................######........######@@@O@@@&S..#...........#...........#...........#...........#...........#...........#...........#..........#.............#";
+	map += L"#....#..........................#.......!..................######........######@@@O@@N&S..#...........#...........#...........#...........#...........#...........#...........#..........#.............#";
 	map += L"#....#..........................#..............................................@@@@@@@#......#.....#.................#.....#.................#.....#.................#.....#...............#...........#";
-	map += L"#....#..........................#..............................................@@@@@@@#.........#.......................#.......................#.......................#....................#.........#";
+	map += L"#....#..........................#..............................................@@@@@@@#......................................................................................................#.........#";
 	map += L"#....#..........................#.....................##............##.........@@@@@@@#############################################################################################...........#........#";
 	map += L"#....#..........................#.....................#################################...........................................................................................#............#.......#";
 	map += L"#....#..........................############..........##..............................#...........................................................................................#...........#........#";
@@ -336,7 +406,7 @@ void map_pulling(wstring& map)
 	map += L"#....#......#......#......#..#...........................................................................................................................#........#...................#....#.....#.....#";
 	map += L"#....................######################################################################################################################################NNNNNNN#.....!.......#.....#......!.........#";
 	map += L"#.....#.......#..........@@@@@@##.....................................#.....................................#...............!.....................................#...................#................#";
-	map += L"#........................@@@O@@&S..................#...............................................#......................................#.......................#........#..........#................#";
+	map += L"#........................@@@O@N&S..................#...............................................#......................................#.......................#........#..........#................#";
 	map += L"#...#...#......#.........@@@@@@##..................................!...............#.....................!...............#....................................#...#?..................#?.......#.......#";
 	map += L"########################################################################################################################################################################################################";
 
@@ -404,21 +474,21 @@ void open_map(wchar_t* console, wstring map)
 	// Динамическая навигация игрока
 	if ((fBufPlayerA >= -0.3925f && fBufPlayerA <= 0.3925) || (fBufPlayerA >= 5.8575f && fBufPlayerA <= 6.7f) ||
 		(fBufPlayerA >= -6.7f && fBufPlayerA <= -5.8575f)) // смотрим вперед
-		console[7 * iConsoleWidth + 14] = 0x2569;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x2569;
 	else if ((fBufPlayerA >= 0.3925f && fBufPlayerA <= 1.1775f) || (fBufPlayerA >= -5.8875f && fBufPlayerA <= -5.1025f)) // смотрим вперед и вправо
-		console[7 * iConsoleWidth + 14] = 0x2557;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x2557;
 	else if ((fBufPlayerA >= 5.1025f && fBufPlayerA <= 5.8875f) || (fBufPlayerA >= -1.1775f && fBufPlayerA <= -0.3925f)) // смотрим вперед и влево
-		console[7 * iConsoleWidth + 14] = 0x2554;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x2554;
 	else if ((fBufPlayerA >= 1.1775f && fBufPlayerA <= 1.9625f) || (fBufPlayerA >= -5.1025f && fBufPlayerA <= -4.3175f)) // смотрим вправо
-		console[7 * iConsoleWidth + 14] = 0x2560;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x2560;
 	else if ((fBufPlayerA >= 2.7475f && fBufPlayerA <= 3.5325f) || (fBufPlayerA >= -3.5325f && fBufPlayerA <= -2.7475f)) // смотрим назад
-		console[7 * iConsoleWidth + 14] = 0x2566;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x2566;
 	else if ((fBufPlayerA >= 1.9625f && fBufPlayerA <= 2.7475f) || (fBufPlayerA >= -4.3175f && fBufPlayerA <= -3.5325f)) // смотрим назад и вправо
-		console[7 * iConsoleWidth + 14] = 0x255D;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x255D;
 	else if ((fBufPlayerA >= 3.5325f && fBufPlayerA <= 4.3175f) || (fBufPlayerA >= -2.7475f && fBufPlayerA <= -1.9625f)) // смотрим назад и влево
-		console[7 * iConsoleWidth + 14] = 0x255A;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x255A;
 	else if ((fBufPlayerA >= 4.3175f && fBufPlayerA <= 5.1025f) || (fBufPlayerA >= -1.9625f && fBufPlayerA <= -1.1775f)) // смотрим влево
-		console[7 * iConsoleWidth + 14] = 0x2563;
+		console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 0x2563;
 
 	// Обводка карты
 	int16_t iMapCorner1 = 0x2551;
@@ -519,7 +589,6 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 
 				else if (menu <= whil && menu > 0)
 				{
-					/*file.seekg(0, file.beg);*/
 					for (int16_t i = 0; i < menu; i++)
 					{
 						for (int16_t j = 0; j < 5; j++)
@@ -540,7 +609,6 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 				{
 					whil = 0;
 					wcout << L"\nПопробуйте еще раз!\n";
-					//system("cls");
 				}
 			}
 		}
@@ -567,6 +635,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 	bool bMapIsOpen = false;						// Признак открытой карты
 	bool bScreamerOn = false;						// Признак скримера
 	bool bScreamShock = true;
+	bool bMessageInfoIsOpen = false;
+	bool bAllMessages[14] = { false };
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -577,6 +647,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
 	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
+	int16_t iMessageCount = 0;						// Количество найденных записок
+	int16_t iNumberMessange = 0;					// Номер найденной записики
 	int16_t iSaveDelay = 0;							// задержка для сохранения
 	int32_t iWalkDelay = 0;							// Задержка для ходьбы
 
@@ -647,6 +719,23 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 						bMapIsOpen = false;
 			}
 		}
+																						// Информация о записках
+		else if ((GetAsyncKeyState((unsigned short)'F') & 0x8000 || bMessageInfoIsOpen == true) && bScreamerOn == false
+			&& (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?' && map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '&'))
+		{
+			if (!bMessageInfoIsOpen)
+			{
+				message_info(console, bAllMessages);
+				bMessageInfoIsOpen = true;
+			}
+
+			else
+			{
+				if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
+					|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
+					bMessageInfoIsOpen = false;
+			}
+		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '!' && iScreamDelay <= 10 && bScreamShock == true)    // Символ скримера
 		{
@@ -671,13 +760,22 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 		else if ((map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?' || map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '&') 
 			&& iMessageDelay == 0)    // Символ сообщения
 		{
-			letter(console, iObiliscCounter);
+			iNumberMessange = letter(console, iObiliscCounter);
 			_getch();
 
 			if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
 				|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
-					if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
-						iMessageDelay++;
+				if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
+				{
+					iMessageDelay++;
+
+					if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '?')
+					{
+						iMessageCount++;
+						map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] = '.';
+						bAllMessages[iNumberMessange] = true;
+					}
+				}
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == 'O')	// Обелиск
@@ -1103,8 +1201,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				}
 			}
 			// Вывод координат и таймера
-			swprintf_s(console, 90, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Скорость: %2.2f", fPlayerX,
-				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, fSpeed);
+			swprintf_s(console, 110, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Найдено записок[%d|14],"
+				" Скорость: %2.2f", fPlayerX, fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, iMessageCount,fSpeed);
 		}
 
 		// Вывод на экран
@@ -1142,9 +1240,10 @@ void control()
 		"|>> [A] - Повернуться влево\n"
 		"|>> [D] - Повернуться вправо\n"
 		"|>> [U] - Сохранить игру\n"
+		"|>> [F] - Показать, какие записки найдены, а какие - нет\n"
 		"|>> [X] - Показать карту\n"
 		"|>> [TAB] - Вкл./Выкл. миникарту\n"
-		"|-------------------------------->>>\n";
+		"|--------------------------------------------------------->>>\n";
 
 
 	system("pause");

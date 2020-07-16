@@ -30,7 +30,7 @@
 using namespace std;
 
 #define SPEED 5
-#define TURBO_BOOST 10
+#define TURBO_BOOST 5
 
 extern int16_t iConsoleWidth;				// Ширина консоли
 extern int16_t iConsoleHeight;				// Высота консоли
@@ -60,7 +60,8 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 
 void screamer(wchar_t* console);
 bool game_over(wchar_t* console, wchar_t a);
-void letter(wchar_t* console, int16_t iObeliscCount);
+int16_t letter(wchar_t* console, int16_t iObeliscCount);
+void message_info(wchar_t* console, bool AllMessages[]);
 void open_map(wchar_t* console, wstring map);
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter);
