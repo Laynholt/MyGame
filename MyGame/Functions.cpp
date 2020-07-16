@@ -526,7 +526,7 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter,
 	wofstream file;
 	file.imbue(utf8_locale);	 // связываем наш поток с нужной локалью
 	file.open(L"save.txt", ios_base::app); // запись в конец файла
-	file << endl << startTime << L" " << (int16_t)fPlayerX << L" " << (int16_t)fPlayerY << L" " << (int16_t)fPlayerA
+	file << startTime << L" " << (int16_t)fPlayerX << L" " << (int16_t)fPlayerY << L" " << (int16_t)fPlayerA
 		<< L" Время: " << Time << L" Количество найденных обелисков: " << iObiliscCounter;
 
 	for (int16_t i = 0; i < 5; i++)
@@ -540,6 +540,7 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter,
 	{
 		file << L" " << AllMessange[i];
 	}
+	file << endl;
 
 	file.close();
 
@@ -548,7 +549,7 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter,
 void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[])  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
 {
 	wifstream file(L"save.txt");
-	wstring line, buf;
+	wstring line;
 	file.imbue(utf8_locale);	 // связываем наш поток с нужной локалью
 	bool exit = 0;
 	int16_t iObiliscCounter, iMessageCount, Time, menu, whil = 0;
@@ -562,55 +563,10 @@ void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllM
 
 		while (!exit)
 		{
-			/*while (getline(file, line))
+			while (getline(file, line))
 			{
 				if (!line.empty())
 					wcout << L"\nСохраниние [" << ++whil << "] " << line;
-			}*/
-
-			while (!file.eof())
-			{
-				line = L"";
-
-				for (int16_t i = 0; i < 5; i++)
-				{
-					file >> buf;
-					buf += L" ";
-					line += buf;
-				}
-				
-				for (int16_t i = 0; i < 3; i++)
-				{
-					file >> buf;
-				}
-
-				for (int16_t i = 0; i < 6; i++)
-				{
-					file >> buf;
-					buf += L" ";
-					line += buf;
-				}
-
-				for (int16_t i = 0; i < 5; i++)
-				{
-					file >> buf;
-				}
-
-				for (int16_t i = 0; i < 3; i++)
-				{
-					file >> buf;
-					buf += L" ";
-					line += buf;
-				}
-
-				for (int16_t i = 0; i < 14; i++)
-				{
-					file >> buf;
-				}
-
-				if (!line.empty())
-					wcout << L"\nСохраниние [" << ++whil << "] " << line;
-
 			}
 
 			file.close();
