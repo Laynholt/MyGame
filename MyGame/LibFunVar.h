@@ -64,9 +64,10 @@ int16_t letter(wchar_t* console, int16_t iObeliscCount);
 void message_info(wchar_t* console, bool AllMessages[]);
 void open_map(wchar_t* console, wstring map);
 
-void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter);
-void game(float fX = 1.0f, float fY = 1.0f, float fA = 1.0f, int16_t Time = 0, int16_t iObiliscSave = 0);
-void continue_game(audiere::OutputStreamPtr sound);
+void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter, int16_t MessageCount, bool AllMessange[], bool AllObeliscs[]);
+void game(bool AllObeliscs[], bool AllMessages[], float fX = 1.0f, float fY = 1.0f, float fA = 1.0f, int16_t Time = 0, int16_t iObiliscSave = 0,
+    int16_t iMessangeCount = 0);
+void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[]);
 void authors();
 void control();
 

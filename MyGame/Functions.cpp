@@ -321,9 +321,9 @@ void map_pulling(wstring& map)
 	map += L"#&####..........................#.....................#################################................................................................................................................#";
 	map += L"#....#..........................#.....................##............##.........@@@@@@@##################################################################################################################";
 	map += L"#....#..........................#..............................................@@@@@@@#.....................#.......................#.......................#.......................#.................?#";
-	map += L"#....#..........................#..............................................@@@@@@@#..................#.....#.................#.....#.................#.....#.................#.....#...............#";
+	map += L"#....#..........................#..............................................@@@@@@N#..................#.....#.................#.....#.................#.....#.................#.....#...............#";
 	map += L"#....#..........................#.......!..................######........######@@@O@@N&S..#...........#...........#...........#...........#...........#...........#...........#..........#.............#";
-	map += L"#....#..........................#..............................................@@@@@@@#......#.....#.................#.....#.................#.....#.................#.....#...............#...........#";
+	map += L"#....#..........................#..............................................@@@@@@N#......#.....#.................#.....#.................#.....#.................#.....#...............#...........#";
 	map += L"#....#..........................#..............................................@@@@@@@#......................................................................................................#.........#";
 	map += L"#....#..........................#.....................##............##.........@@@@@@@#############################################################################################...........#........#";
 	map += L"#....#..........................#.....................#################################...........................................................................................#............#.......#";
@@ -405,9 +405,9 @@ void map_pulling(wstring& map)
 	map += L"#.....!......................#...........................................................................................................................#........#.....#.............#................#";
 	map += L"#....#......#......#......#..#...........................................................................................................................#........#...................#....#.....#.....#";
 	map += L"#....................######################################################################################################################################NNNNNNN#.....!.......#.....#......!.........#";
-	map += L"#.....#.......#..........@@@@@@##.....................................#.....................................#...............!.....................................#...................#................#";
+	map += L"#.....#.......#..........@@@@@N##.....................................#.....................................#...............!.....................................#...................#................#";
 	map += L"#........................@@@O@N&S..................#...............................................#......................................#.......................#........#..........#................#";
-	map += L"#...#...#......#.........@@@@@@##..................................!...............#.....................!...............#....................................#...#?..................#?.......#.......#";
+	map += L"#...#...#......#.........@@@@@N##..................................!...............#.....................!...............#....................................#...#?..................#?.......#.......#";
 	map += L"########################################################################################################################################################################################################";
 
 }
@@ -518,27 +518,44 @@ void open_map(wchar_t* console, wstring map)
 	}
 }
 
-void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
+void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter, int16_t iMessangeCount, bool AllMessange[], bool AllObeliscs[])
 {
 	char startTime[80];
 	time_t seconds = time(NULL);
 	strftime(startTime, 80, "%A %d %B %Y %H:%M:%S", localtime(&seconds));
 	wofstream file;
+	file.imbue(utf8_locale);	 // связываем наш поток с нужной локалью
 	file.open(L"save.txt", ios_base::app); // запись в конец файла
-	file << startTime << " " << (int16_t)fPlayerX << " " << (int16_t)fPlayerY << " " << (int16_t)fPlayerA
-		<< " " << Time << " " << iObiliscCounter << endl;
+	file << startTime << L" " << (int16_t)fPlayerX << L" " << (int16_t)fPlayerY << L" " << (int16_t)fPlayerA
+		<< L" Время: " << Time << L" Количество найденных обелисков: " << iObiliscCounter;
+
+	for (int16_t i = 0; i < 5; i++)
+	{
+		file << L" " << AllObeliscs[i];
+	}
+
+	file << L" Найдено записок: " << iMessangeCount;
+
+	for (int16_t i = 0; i < 14; i++)
+	{
+		file << L" " << AllMessange[i];
+	}
+	file << endl;
+
 	file.close();
 
 }
 
-void continue_game(audiere::OutputStreamPtr sound)  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
+void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[])  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
 {
 	wifstream file(L"save.txt");
 	wstring line;
+	file.imbue(utf8_locale);	 // связываем наш поток с нужной локалью
 	bool exit = 0;
-	int16_t iObiliscCounter, Time, menu, whil = 0;
+	int16_t iObiliscCounter, iMessageCount, Time, menu, whil = 0;
 
-	iObiliscCounter = Time = 0;
+
+	iObiliscCounter = Time = iMessageCount = 0;
 
 	if (file.is_open())
 	{
@@ -597,8 +614,22 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 						file >> fPlayerX;
 						file >> fPlayerY;
 						file >> fPlayerA;
+						file >> line;
 						file >> Time;
+						file >> line;
+						file >> line;
+						file >> line;
 						file >> iObiliscCounter;
+
+						for (int16_t j = 0; j < 5; j++)
+							file >> AllObeliscs[j];
+
+						file >> line;
+						file >> line;
+						file >> iMessageCount;
+
+						for (int16_t j = 0; j < 14; j++)
+							file >> AllMessages[j];
 					}
 
 
@@ -616,10 +647,10 @@ void continue_game(audiere::OutputStreamPtr sound)  // открытие сохр
 
 	file.close();
 	sound->stop();
-	game(fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter);
+	game(AllObeliscs, AllMessages, fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter, iMessageCount);
 }
 
-void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//сама игра
+void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave, int16_t MessageCount)//сама игра
 {
 
 	// Создаём буфер экрана
@@ -636,6 +667,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 	bool bScreamerOn = false;						// Признак скримера
 	bool bScreamShock = true;
 	bool bMessageInfoIsOpen = false;
+	bool bAllObeliscs[5] = { false };
 	bool bAllMessages[14] = { false };
 
 	float fStopwatch = Time;						// Таймер
@@ -647,14 +679,147 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
 	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
-	int16_t iMessageCount = 0;						// Количество найденных записок
+	int16_t iMessageCount = MessageCount;						// Количество найденных записок
 	int16_t iNumberMessange = 0;					// Номер найденной записики
 	int16_t iSaveDelay = 0;							// задержка для сохранения
 	int32_t iWalkDelay = 0;							// Задержка для ходьбы
 
 	map_pulling(map);
 
-	
+	// Заполняемся из сохранения
+	for (int16_t i = 0; i < 14; i++)
+		bAllMessages[i] = AllMessages[i];
+
+	for (int16_t i = 0; i < 5; i++)
+		bAllObeliscs[i] = AllObeliscs[i];
+
+	fBufPlayerA = fPlayerA;
+
+	if (bAllMessages[0]) { map[54 * iMapWidth + 1] = '.'; }
+	if (bAllMessages[1]) { map[78 * iMapWidth + 185] = '.'; }
+	if (bAllMessages[2]) { map[22 * iMapWidth + 64] = '.'; }
+
+	if (bAllMessages[3]) { map[1 * iMapWidth + 33] = '.'; }
+	if (bAllMessages[4]) { map[76 * iMapWidth + 1] = '.'; }
+	if (bAllMessages[5]) { map[98 * iMapWidth + 163] = '.'; }
+	if (bAllMessages[6]) { map[98 * iMapWidth + 183] = '.'; }
+	if (bAllMessages[7]) { map[57 * iMapWidth + 34] = '.'; }
+	if (bAllMessages[8]) { map[39 * iMapWidth + 46] = '.'; }
+	if (bAllMessages[9]) { map[51 * iMapWidth + 113] = '.'; }
+	if (bAllMessages[10]) { map[11 * iMapWidth + 198] = '.'; }
+	if (bAllMessages[11]) { map[20 * iMapWidth + 33] = '.'; }
+	if (bAllMessages[12]) { map[8 * iMapWidth + 82] = '.'; }
+
+	if (bAllMessages[13]) { map[27 * iMapWidth + 198] = '.'; }
+
+
+	if (bAllObeliscs[0])
+	{
+		map[49 * iMapWidth + 17] = '.';
+
+		int16_t del = 0;
+
+		for (int16_t i = 0; i < 7; i++)										// Удаления звуков обелиска
+		{
+			for (int16_t j = 0; j < 7; j++)
+			{
+				del = (49 - 3 + j) * iMapWidth + 17 - 3 + i;
+
+				if (del >= 0 && del < iMapHeight * iMapWidth)
+				{
+					if (map[del] == '@')
+						map[del] = '.';
+				}
+			}
+
+		}
+	}
+	if (bAllObeliscs[1])
+	{
+		map[97 * iMapWidth + 28] = '.';
+
+		int16_t del = 0;
+
+		for (int16_t i = 0; i < 7; i++)										// Удаления звуков обелиска
+		{
+			for (int16_t j = 0; j < 7; j++)
+			{
+				del = (97 - 3 + j) * iMapWidth + 28 - 3 + i;
+
+				if (del >= 0 && del < iMapHeight * iMapWidth)
+				{
+					if (map[del] == '@')
+						map[del] = '.';
+				}
+			}
+
+		}
+	}
+	if (bAllObeliscs[2])
+	{
+		map[63 * iMapWidth + 109] = '.';
+
+		int16_t del = 0;
+
+		for (int16_t i = 0; i < 7; i++)										// Удаления звуков обелиска
+		{
+			for (int16_t j = 0; j < 7; j++)
+			{
+				del = (63 - 3 + j) * iMapWidth + 109 - 3 + i;
+
+				if (del >= 0 && del < iMapHeight * iMapWidth)
+				{
+					if (map[del] == '@')
+						map[del] = '.';
+				}
+			}
+
+		}
+	}
+	if (bAllObeliscs[3])
+	{
+		map[13 * iMapWidth + 82] = '.';
+
+		int16_t del = 0;
+
+		for (int16_t i = 0; i < 7; i++)										// Удаления звуков обелиска
+		{
+			for (int16_t j = 0; j < 7; j++)
+			{
+				del = (49 - 3 + j) * iMapWidth + 17 - 3 + i;
+
+				if (del >= 0 && del < iMapHeight * iMapWidth)
+				{
+					if (map[del] == '@')
+						map[del] = '.';
+				}
+			}
+
+		}
+	}
+	if (bAllObeliscs[4])
+	{
+		map[63 * iMapWidth + 162] = '.';
+
+		int16_t del = 0;
+
+		for (int16_t i = 0; i < 7; i++)										// Удаления звуков обелиска
+		{
+			for (int16_t j = 0; j < 7; j++)
+			{
+				del = (63 - 3 + j) * iMapWidth + 162 - 3 + i;
+
+				if (del >= 0 && del < iMapHeight * iMapWidth)
+				{
+					if (map[del] == '@')
+						map[del] = '.';
+				}
+			}
+
+		}
+	}
+
+
 	// Воспроизводим музыку
 	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
 	audiere::OutputStreamPtr sound = OpenSound(device, "sounds/apocryphos.mp3", true); // Создаем поток для нашего звука
@@ -801,6 +966,13 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				}
 
 			}
+
+			if ((int16_t)fPlayerX == 17 && (int16_t)fPlayerY == 49) { bAllObeliscs[0] = true; }
+			else if ((int16_t)fPlayerX == 28 && (int16_t)fPlayerY == 97) { bAllObeliscs[1] = true; }
+			else if ((int16_t)fPlayerX == 109 && (int16_t)fPlayerY == 63) { bAllObeliscs[2] = true; }
+			else if ((int16_t)fPlayerX == 82 && (int16_t)fPlayerY == 13) { bAllObeliscs[3] = true; }
+			else if ((int16_t)fPlayerX == 162 && (int16_t)fPlayerY == 63) { bAllObeliscs[4] = true; }
+
 		}
 
 		else
@@ -859,7 +1031,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 			{
 				if (iSaveDelay == 0 || iSaveDelay + 5 <= (int16_t)fStopwatch)
 				{
-					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter);
+					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter, iMessageCount, bAllMessages, bAllObeliscs);
 					iSaveDelay = (int16_t)fStopwatch;
 				}
 			}
@@ -1201,7 +1373,7 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				}
 			}
 			// Вывод координат и таймера
-			swprintf_s(console, 110, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Найдено записок[%d|14],"
+			swprintf_s(console, 120, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Найдено записок[%d|14],"
 				" Скорость: %2.2f", fPlayerX, fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, iMessageCount,fSpeed);
 		}
 

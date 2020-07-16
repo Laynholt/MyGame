@@ -29,6 +29,8 @@ int main()
 	//char choose = ' ';
 	int16_t index = 0;
 	int32_t value = 0;
+	bool AllObeliscs[5] = { false };
+	bool AllMessages[14] = { false };
 
 	int8_t choose = 1;
 	const int8_t num_str = 4;
@@ -61,8 +63,8 @@ int main()
 			color_meny(choose, arr_for_meny, num_str);
 			break;
 		case 13:
-			if (choose == 1) { sound->stop(); game(); } //запуск игры
-			else if (choose == 2) { continue_game(sound); } //взятие сохраненией, сохраниться можно на U
+			if (choose == 1) { sound->stop(); game(AllObeliscs, AllMessages); } //запуск игры
+			else if (choose == 2) { continue_game(sound, AllObeliscs, AllMessages); } //взятие сохраненией, сохраниться можно на U
 			else if (choose == 3) { authors(); }
 			else if (choose == 4) { control(); }
 			choose = 1;
