@@ -42,6 +42,7 @@ extern float fPlayerY;
 extern float fPlayerXBuf;
 extern float fPlayerYBuf;
 extern float fPlayerA;						// Направление игрока
+extern float fBufPlayerA;
 extern float fSpeed;						// Скорость передвижения
 extern float fSpeedCamera;					// Скорость поворота
 

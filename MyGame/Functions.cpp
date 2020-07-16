@@ -401,6 +401,25 @@ void open_map(wchar_t* console, wstring map)
 			}
 		}
 
+	// Динамическая навигация игрока
+	if ((fBufPlayerA >= -0.3925f && fBufPlayerA <= 0.3925) || (fBufPlayerA >= 5.8575f && fBufPlayerA <= 6.7f) ||
+		(fBufPlayerA >= -6.7f && fBufPlayerA <= -5.8575f)) // смотрим вперед
+		console[7 * iConsoleWidth + 14] = 0x2569;
+	else if ((fBufPlayerA >= 0.3925f && fBufPlayerA <= 1.1775f) || (fBufPlayerA >= -5.8875f && fBufPlayerA <= -5.1025f)) // смотрим вперед и вправо
+		console[7 * iConsoleWidth + 14] = 0x2557;
+	else if ((fBufPlayerA >= 5.1025f && fBufPlayerA <= 5.8875f) || (fBufPlayerA >= -1.1775f && fBufPlayerA <= -0.3925f)) // смотрим вперед и влево
+		console[7 * iConsoleWidth + 14] = 0x2554;
+	else if ((fBufPlayerA >= 1.1775f && fBufPlayerA <= 1.9625f) || (fBufPlayerA >= -5.1025f && fBufPlayerA <= -4.3175f)) // смотрим вправо
+		console[7 * iConsoleWidth + 14] = 0x2560;
+	else if ((fBufPlayerA >= 2.7475f && fBufPlayerA <= 3.5325f) || (fBufPlayerA >= -3.5325f && fBufPlayerA <= -2.7475f)) // смотрим назад
+		console[7 * iConsoleWidth + 14] = 0x2566;
+	else if ((fBufPlayerA >= 1.9625f && fBufPlayerA <= 2.7475f) || (fBufPlayerA >= -4.3175f && fBufPlayerA <= -3.5325f)) // смотрим назад и вправо
+		console[7 * iConsoleWidth + 14] = 0x255D;
+	else if ((fBufPlayerA >= 3.5325f && fBufPlayerA <= 4.3175f) || (fBufPlayerA >= -2.7475f && fBufPlayerA <= -1.9625f)) // смотрим назад и влево
+		console[7 * iConsoleWidth + 14] = 0x255A;
+	else if ((fBufPlayerA >= 4.3175f && fBufPlayerA <= 5.1025f) || (fBufPlayerA >= -1.9625f && fBufPlayerA <= -1.1775f)) // смотрим влево
+		console[7 * iConsoleWidth + 14] = 0x2563;
+
 	// Обводка карты
 	int16_t iMapCorner1 = 0x2551;
 	int16_t iMapCorner2 = 0x2550;
@@ -427,7 +446,6 @@ void open_map(wchar_t* console, wstring map)
 				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
 		}
 	}
-	console[(iConsoleHeight / 2 - 1) * iConsoleWidth + iConsoleWidth / 2] = 'A';
 }
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter)
@@ -552,7 +570,6 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
-	float fBufPlayerA = fPlayerA;
 
 	int16_t iScreamDelay = 0;						// Задержка для воспроизведения скримера
 	int16_t iRunTime = 0;							// Время бега
@@ -1039,14 +1056,22 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 					}
 
 				// Динамическая навигация игрока
-				if ((fBufPlayerA >= -0.785f && fBufPlayerA <= 0.785) || (fBufPlayerA >= 5.495f && fBufPlayerA <= 7.065f) ||
-					(fBufPlayerA >= -7.065f && fBufPlayerA <= -5.495f)) // смотрим вперед
+				if ((fBufPlayerA >= -0.3925f && fBufPlayerA <= 0.3925) || (fBufPlayerA >= 5.8575f && fBufPlayerA <= 6.7f) ||
+					(fBufPlayerA >= -6.7f && fBufPlayerA <= -5.8575f)) // смотрим вперед
 					console[7 * iConsoleWidth + 14] = 0x2569;
-				else if ((fBufPlayerA >= 0.785f && fBufPlayerA <= 2.355f) || (fBufPlayerA >= -5.495f && fBufPlayerA <= -3.925f)) // смотрим вправо
+				else if ((fBufPlayerA >= 0.3925f && fBufPlayerA <= 1.1775f) || (fBufPlayerA >= -5.8875f && fBufPlayerA <= -5.1025f)) // смотрим вперед и вправо
+					console[7 * iConsoleWidth + 14] = 0x2557;
+				else if ((fBufPlayerA >= 5.1025f && fBufPlayerA <= 5.8875f) || (fBufPlayerA >= -1.1775f && fBufPlayerA <= -0.3925f)) // смотрим вперед и влево
+					console[7 * iConsoleWidth + 14] = 0x2554;
+				else if ((fBufPlayerA >= 1.1775f && fBufPlayerA <= 1.9625f) || (fBufPlayerA >= -5.1025f && fBufPlayerA <= -4.3175f)) // смотрим вправо
 					console[7 * iConsoleWidth + 14] = 0x2560;
-				else if ((fBufPlayerA >= 2.355f && fBufPlayerA <= 3.925f) || (fBufPlayerA >= -3.925f && fBufPlayerA <= -2.355f)) // смотрим назад
+				else if ((fBufPlayerA >= 2.7475f && fBufPlayerA <= 3.5325f) || (fBufPlayerA >= -3.5325f && fBufPlayerA <= -2.7475f)) // смотрим назад
 					console[7 * iConsoleWidth + 14] = 0x2566;
-				else if ((fBufPlayerA >= 3.925f && fBufPlayerA <= 5.495f) || (fBufPlayerA >= -2.355f && fBufPlayerA <= -0.785f)) // смотрим влево
+				else if ((fBufPlayerA >= 1.9625f && fBufPlayerA <= 2.7475f) || (fBufPlayerA >= -4.3175f && fBufPlayerA <= -3.5325f)) // смотрим назад и вправо
+					console[7 * iConsoleWidth + 14] = 0x255D;
+				else if ((fBufPlayerA >= 3.5325f && fBufPlayerA <= 4.3175f) || (fBufPlayerA >= -2.7475f && fBufPlayerA <= -1.9625f)) // смотрим назад и влево
+					console[7 * iConsoleWidth + 14] = 0x255A;
+				else if ((fBufPlayerA >= 4.3175f && fBufPlayerA <= 5.1025f) || (fBufPlayerA >= -1.9625f && fBufPlayerA <= -1.1775f)) // смотрим влево
 					console[7 * iConsoleWidth + 14] = 0x2563;
 
 
@@ -1078,8 +1103,8 @@ void game(float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave)//с�
 				}
 			}
 			// Вывод координат и таймера
-			swprintf_s(console, 90, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Скорость: %2.2f, %2.3f", fPlayerX,
-				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, fSpeed, fBufPlayerA);
+			swprintf_s(console, 90, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Скорость: %2.2f", fPlayerX,
+				fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, fSpeed);
 		}
 
 		// Вывод на экран

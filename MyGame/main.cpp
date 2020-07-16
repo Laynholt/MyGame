@@ -10,6 +10,7 @@ float fPlayerY = 1.0f;
 float fPlayerXBuf = fPlayerX;
 float fPlayerYBuf = fPlayerY;
 float fPlayerA = 0.0f;									// Направление игрока
+float fBufPlayerA = fPlayerA;
 float fSpeed = SPEED;									// Скорость передвижения
 float fSpeedCamera = 5.0f;								// Скорость камеры
 
