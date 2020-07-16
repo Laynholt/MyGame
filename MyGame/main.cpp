@@ -25,6 +25,10 @@ int main()
 
 	srand(time(NULL));
 	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
+
+	HWND consoleWindow = GetConsoleWindow();
+	SetWindowLong(consoleWindow, GWL_STYLE, GetWindowLong(consoleWindow, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
+
 	bool exit = 1;
 	//char choose = ' ';
 	int16_t index = 0;
