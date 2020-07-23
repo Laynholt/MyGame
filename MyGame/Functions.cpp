@@ -64,6 +64,60 @@ void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 	}
 }
 
+void controls_info(wchar_t* console)
+{
+	vector<wstring> v;
+	int16_t i = 0, j = 0;
+	int16_t nx, nx1, ny, ny1;
+
+	v.push_back(L"[W] - Идти вперёд               ");
+	v.push_back(L"[S] - Идти назад                ");
+	v.push_back(L"[Z] - Бежать                    ");
+	v.push_back(L"[A] - Повернуться влево         ");
+	v.push_back(L"[D] - Повернуться вправо        ");
+	v.push_back(L"[U] - Сохранить игру            ");
+	v.push_back(L"[F] - Показать количесво записок");
+	v.push_back(L"[I] - Информация об управлении  ");
+	v.push_back(L"[X] - Показать карту            ");
+	v.push_back(L"[TAB] - Вкл./Выкл. миникарту    ");
+
+	for (nx = 1; nx < 34; nx++, i++)
+	{
+		for (ny = 17; ny < 27; ny++, j++)
+		{
+			console[ny * iConsoleWidth + nx] = v[j][i];
+		}
+		j = 0;
+	}
+
+	// Обводка окна
+	int16_t iMapCorner1 = 0x2551;
+	int16_t iMapCorner2 = 0x2550;
+	for (nx = 0; nx < 35; nx++)
+	{
+		for (ny = 16; ny < 28; ny++)
+		{
+			if (nx == 0)											// Левая вертикальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+			else if (ny == 16)										// Верхняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (ny == 27)										// Нижняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (nx == 34)										// Правая вертикольная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+			if (nx == 0 && ny == 16)
+				console[ny * iConsoleWidth] = 0x2554;				// Левый верний угол
+			else if (nx == 34 && ny == 16)
+				console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+			else if (nx == 0 && ny == 27)
+				console[ny * iConsoleWidth] = 0x255A;				// Левый нижний угол
+			else if (nx == 34 && ny == 27)
+				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+		}
+	}
+}
+
 void message_info(wchar_t* console, bool AllMessages[])
 {
 	int16_t i = 0, j = 1, k = 0;
@@ -750,6 +804,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 	bool bScreamerOn = false;						// Признак скримера
 	bool bScreamShock = true;
 	bool bMessageInfoIsOpen = false;
+	bool bControlsInfoIsOpen = false;
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -967,6 +1022,23 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 				if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
 					|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
 						bMapIsOpen = false;
+			}
+		}
+																						// Информация об управдении
+		else if ((GetAsyncKeyState((unsigned short)'I') & 0x8000 || bControlsInfoIsOpen == true) && bScreamerOn == false
+			&& (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?' && map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '&'))
+		{
+			if (!bControlsInfoIsOpen && !((GetAsyncKeyState((unsigned short)'F') & 0x8000)))
+			{
+				controls_info(console);
+				bControlsInfoIsOpen = true;
+			}
+
+			else
+			{
+				if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
+					|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
+					bControlsInfoIsOpen = false;
 			}
 		}
 																						// Информация о записках
@@ -1498,6 +1570,7 @@ void control()
 		"|>> [D] - Повернуться вправо\n"
 		"|>> [U] - Сохранить игру\n"
 		"|>> [F] - Показать, какие записки найдены, а какие - нет\n"
+		"|>> [I] - Информация об управлении\n"
 		"|>> [X] - Показать карту\n"
 		"|>> [TAB] - Вкл./Выкл. миникарту\n"
 		"|--------------------------------------------------------->>>\n";

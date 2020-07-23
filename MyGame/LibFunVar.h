@@ -62,6 +62,7 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 void screamer(wchar_t* console);
 bool game_over(wchar_t* console, wchar_t a);
 int16_t letter(wchar_t* console, int16_t iObeliscCount);
+void controls_info(wchar_t* console);
 void message_info(wchar_t* console, bool AllMessages[]);
 void open_map(wchar_t* console, wstring map);
 
