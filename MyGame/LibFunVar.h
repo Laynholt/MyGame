@@ -53,6 +53,7 @@ extern float fDepth;
 // преобразования символов при чтении из файла в кодировке UTF-8
 const locale utf8_locale = locale(locale(), new codecvt_utf8<wchar_t>());
 
+void menu();
 void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str);
 
 void map_pulling(wstring& map);
@@ -61,6 +62,7 @@ bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 void screamer(wchar_t* console);
 bool game_over(wchar_t* console, wchar_t a);
 int16_t letter(wchar_t* console, int16_t iObeliscCount);
+void controls_info(wchar_t* console);
 void message_info(wchar_t* console, bool AllMessages[]);
 void open_map(wchar_t* console, wstring map);
 

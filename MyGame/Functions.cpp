@@ -1,5 +1,50 @@
 ﻿#include "LibFunVar.h"
 
+void menu()
+{
+	bool AllObeliscs[5] = { false };
+	bool AllMessages[14] = { false };
+
+	int8_t choose = 1;
+	const int8_t num_str = 4;
+	wstring arr_for_meny[num_str] = { L"Новая игра", L"Продолжить игру", L"Разработчики", L"Управление" };
+
+	// Воспроизводим музыку
+	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
+	audiere::OutputStreamPtr sound = OpenSound(device, "sounds/menu.ogg", true); // Создаем поток для нашего звука
+	sound->play();															// Проигрываем наш звук
+	sound->setVolume(0.5f);
+	sound->setRepeat(true);
+
+	color_meny(choose, arr_for_meny, num_str);
+
+	while (true)
+	{
+		switch (_getch())
+		{
+		case 72: case 'w':
+			choose = (choose > 1) ? --choose : 1;
+			system("cls");
+			color_meny(choose, arr_for_meny, num_str);
+			break;
+		case 80: case 's':
+			choose = (choose < 4) ? ++choose : 4;
+			system("cls");
+			color_meny(choose, arr_for_meny, num_str);
+			break;
+		case 13:
+			if (choose == 1) { sound->stop(); game(AllObeliscs, AllMessages); } //запуск игры
+			else if (choose == 2) { continue_game(sound, AllObeliscs, AllMessages); } //взятие сохраненией, сохраниться можно на U
+			else if (choose == 3) { authors(); }
+			else if (choose == 4) { control(); }
+			choose = 1;
+			system("cls");
+			color_meny(choose, arr_for_meny, num_str);
+			break;
+		}
+	}
+}
+
 void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 {
 	HANDLE color;
@@ -15,6 +60,60 @@ void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 		else
 		{
 			wcout << arr_for_meny[i] << endl;
+		}
+	}
+}
+
+void controls_info(wchar_t* console)
+{
+	vector<wstring> v;
+	int16_t i = 0, j = 0;
+	int16_t nx, nx1, ny, ny1;
+
+	v.push_back(L"[W] - Идти вперёд               ");
+	v.push_back(L"[S] - Идти назад                ");
+	v.push_back(L"[Z] - Бежать                    ");
+	v.push_back(L"[A] - Повернуться влево         ");
+	v.push_back(L"[D] - Повернуться вправо        ");
+	v.push_back(L"[U] - Сохранить игру            ");
+	v.push_back(L"[F] - Показать количесво записок");
+	v.push_back(L"[I] - Информация об управлении  ");
+	v.push_back(L"[X] - Показать карту            ");
+	v.push_back(L"[TAB] - Вкл./Выкл. миникарту    ");
+
+	for (nx = 1; nx < 34; nx++, i++)
+	{
+		for (ny = 17; ny < 27; ny++, j++)
+		{
+			console[ny * iConsoleWidth + nx] = v[j][i];
+		}
+		j = 0;
+	}
+
+	// Обводка окна
+	int16_t iMapCorner1 = 0x2551;
+	int16_t iMapCorner2 = 0x2550;
+	for (nx = 0; nx < 35; nx++)
+	{
+		for (ny = 16; ny < 28; ny++)
+		{
+			if (nx == 0)											// Левая вертикальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+			else if (ny == 16)										// Верхняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (ny == 27)										// Нижняя горизонтальная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner2;
+			else if (nx == 34)										// Правая вертикольная граница
+				console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+			if (nx == 0 && ny == 16)
+				console[ny * iConsoleWidth] = 0x2554;				// Левый верний угол
+			else if (nx == 34 && ny == 16)
+				console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+			else if (nx == 0 && ny == 27)
+				console[ny * iConsoleWidth] = 0x255A;				// Левый нижний угол
+			else if (nx == 34 && ny == 27)
+				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
 		}
 	}
 }
@@ -562,12 +661,6 @@ void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllM
 
 		while (!exit)
 		{
-			/*while (getline(file, line))
-			{
-				if (!line.empty())
-					wcout << L"\nСохраниние [" << ++whil << "] " << line;
-			}*/
-
 			while (!file.eof())
 			{
 				line = L"";
@@ -711,8 +804,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 	bool bScreamerOn = false;						// Признак скримера
 	bool bScreamShock = true;
 	bool bMessageInfoIsOpen = false;
-	bool bAllObeliscs[5] = { false };
-	bool bAllMessages[14] = { false };
+	bool bControlsInfoIsOpen = false;
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -723,41 +815,34 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
 	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
-	int16_t iMessageCount = MessageCount;						// Количество найденных записок
+	int16_t iMessageCount = MessageCount;			// Количество найденных записок
 	int16_t iNumberMessange = 0;					// Номер найденной записики
 	int16_t iSaveDelay = 0;							// задержка для сохранения
 	int32_t iWalkDelay = 0;							// Задержка для ходьбы
 
 	map_pulling(map);
 
-	// Заполняемся из сохранения
-	for (int16_t i = 0; i < 14; i++)
-		bAllMessages[i] = AllMessages[i];
-
-	for (int16_t i = 0; i < 5; i++)
-		bAllObeliscs[i] = AllObeliscs[i];
-
 	fBufPlayerA = fPlayerA;
 
-	if (bAllMessages[0]) { map[54 * iMapWidth + 1] = '.'; }
-	if (bAllMessages[1]) { map[78 * iMapWidth + 185] = '.'; }
-	if (bAllMessages[2]) { map[22 * iMapWidth + 64] = '.'; }
+	if (AllMessages[0]) { map[54 * iMapWidth + 1] = '.'; }
+	if (AllMessages[1]) { map[78 * iMapWidth + 185] = '.'; }
+	if (AllMessages[2]) { map[22 * iMapWidth + 64] = '.'; }
 
-	if (bAllMessages[3]) { map[1 * iMapWidth + 33] = '.'; }
-	if (bAllMessages[4]) { map[76 * iMapWidth + 1] = '.'; }
-	if (bAllMessages[5]) { map[98 * iMapWidth + 163] = '.'; }
-	if (bAllMessages[6]) { map[98 * iMapWidth + 183] = '.'; }
-	if (bAllMessages[7]) { map[57 * iMapWidth + 34] = '.'; }
-	if (bAllMessages[8]) { map[39 * iMapWidth + 46] = '.'; }
-	if (bAllMessages[9]) { map[51 * iMapWidth + 113] = '.'; }
-	if (bAllMessages[10]) { map[11 * iMapWidth + 198] = '.'; }
-	if (bAllMessages[11]) { map[20 * iMapWidth + 33] = '.'; }
-	if (bAllMessages[12]) { map[8 * iMapWidth + 82] = '.'; }
+	if (AllMessages[3]) { map[1 * iMapWidth + 33] = '.'; }
+	if (AllMessages[4]) { map[76 * iMapWidth + 1] = '.'; }
+	if (AllMessages[5]) { map[98 * iMapWidth + 163] = '.'; }
+	if (AllMessages[6]) { map[98 * iMapWidth + 183] = '.'; }
+	if (AllMessages[7]) { map[57 * iMapWidth + 34] = '.'; }
+	if (AllMessages[8]) { map[39 * iMapWidth + 46] = '.'; }
+	if (AllMessages[9]) { map[51 * iMapWidth + 113] = '.'; }
+	if (AllMessages[10]) { map[11 * iMapWidth + 198] = '.'; }
+	if (AllMessages[11]) { map[20 * iMapWidth + 33] = '.'; }
+	if (AllMessages[12]) { map[8 * iMapWidth + 82] = '.'; }
 
-	if (bAllMessages[13]) { map[27 * iMapWidth + 198] = '.'; }
+	if (AllMessages[13]) { map[27 * iMapWidth + 198] = '.'; }
 
 
-	if (bAllObeliscs[0])
+	if (AllObeliscs[0])
 	{
 		map[49 * iMapWidth + 17] = '.';
 
@@ -778,7 +863,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 		}
 	}
-	if (bAllObeliscs[1])
+	if (AllObeliscs[1])
 	{
 		map[97 * iMapWidth + 28] = '.';
 
@@ -799,7 +884,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 		}
 	}
-	if (bAllObeliscs[2])
+	if (AllObeliscs[2])
 	{
 		map[63 * iMapWidth + 109] = '.';
 
@@ -820,7 +905,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 		}
 	}
-	if (bAllObeliscs[3])
+	if (AllObeliscs[3])
 	{
 		map[13 * iMapWidth + 82] = '.';
 
@@ -841,7 +926,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 		}
 	}
-	if (bAllObeliscs[4])
+	if (AllObeliscs[4])
 	{
 		map[63 * iMapWidth + 162] = '.';
 
@@ -910,6 +995,17 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 5)    // Символ конца игры
 		{
 			game_over(console, 0x256C);
+
+			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			{
+				//sound->stop();
+				//s2->stop();
+				//s3->stop();
+				//s4->stop();
+				//delete[] console;
+				//map.clear();
+				//menu();
+			}
 		}
 																							// Клавишей "X" показываем карту
 		else if ((GetAsyncKeyState((unsigned short)'X') & 0x8000 || bMapIsOpen == true) && bScreamerOn == false 
@@ -928,13 +1024,30 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 						bMapIsOpen = false;
 			}
 		}
+																						// Информация об управдении
+		else if ((GetAsyncKeyState((unsigned short)'I') & 0x8000 || bControlsInfoIsOpen == true) && bScreamerOn == false
+			&& (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?' && map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '&'))
+		{
+			if (!bControlsInfoIsOpen && !((GetAsyncKeyState((unsigned short)'F') & 0x8000)))
+			{
+				controls_info(console);
+				bControlsInfoIsOpen = true;
+			}
+
+			else
+			{
+				if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
+					|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
+					bControlsInfoIsOpen = false;
+			}
+		}
 																						// Информация о записках
 		else if ((GetAsyncKeyState((unsigned short)'F') & 0x8000 || bMessageInfoIsOpen == true) && bScreamerOn == false
 			&& (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?' && map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '&'))
 		{
 			if (!bMessageInfoIsOpen)
 			{
-				message_info(console, bAllMessages);
+				message_info(console, AllMessages);
 				bMessageInfoIsOpen = true;
 			}
 
@@ -982,7 +1095,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 					{
 						iMessageCount++;
 						map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] = '.';
-						bAllMessages[iNumberMessange] = true;
+						AllMessages[iNumberMessange] = true;
 					}
 				}
 		}
@@ -1011,11 +1124,11 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 			}
 
-			if ((int16_t)fPlayerX == 17 && (int16_t)fPlayerY == 49) { bAllObeliscs[0] = true; }
-			else if ((int16_t)fPlayerX == 28 && (int16_t)fPlayerY == 97) { bAllObeliscs[1] = true; }
-			else if ((int16_t)fPlayerX == 109 && (int16_t)fPlayerY == 63) { bAllObeliscs[2] = true; }
-			else if ((int16_t)fPlayerX == 82 && (int16_t)fPlayerY == 13) { bAllObeliscs[3] = true; }
-			else if ((int16_t)fPlayerX == 162 && (int16_t)fPlayerY == 63) { bAllObeliscs[4] = true; }
+			if ((int16_t)fPlayerX == 17 && (int16_t)fPlayerY == 49) { AllObeliscs[0] = true; }
+			else if ((int16_t)fPlayerX == 28 && (int16_t)fPlayerY == 97) { AllObeliscs[1] = true; }
+			else if ((int16_t)fPlayerX == 109 && (int16_t)fPlayerY == 63) { AllObeliscs[2] = true; }
+			else if ((int16_t)fPlayerX == 82 && (int16_t)fPlayerY == 13) { AllObeliscs[3] = true; }
+			else if ((int16_t)fPlayerX == 162 && (int16_t)fPlayerY == 63) { AllObeliscs[4] = true; }
 
 		}
 
@@ -1075,7 +1188,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 			{
 				if (iSaveDelay == 0 || iSaveDelay + 5 <= (int16_t)fStopwatch)
 				{
-					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter, iMessageCount, bAllMessages, bAllObeliscs);
+					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter, iMessageCount, AllMessages, AllObeliscs);
 					iSaveDelay = (int16_t)fStopwatch;
 				}
 			}
@@ -1457,6 +1570,7 @@ void control()
 		"|>> [D] - Повернуться вправо\n"
 		"|>> [U] - Сохранить игру\n"
 		"|>> [F] - Показать, какие записки найдены, а какие - нет\n"
+		"|>> [I] - Информация об управлении\n"
 		"|>> [X] - Показать карту\n"
 		"|>> [TAB] - Вкл./Выкл. миникарту\n"
 		"|--------------------------------------------------------->>>\n";
