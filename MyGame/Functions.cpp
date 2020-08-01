@@ -1,6 +1,44 @@
 ﻿#include "LibFunVar.h"
 
-void menu()
+void clearScreen()
+{
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	DWORD count, cellCount;
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	SetConsoleActiveScreenBuffer(hConsole); // Устанавливает заданный экранный буфер, чтобы он стал текущим отображаемым экранным буфером консоли
+	if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
+		return;
+
+	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
+
+	if (!FillConsoleOutputCharacter(hConsole, (TCHAR)' ', cellCount, { 0, 0 }, &count))
+		return;
+	SetConsoleCursorPosition(hConsole, { 0, 0 });
+}
+
+void variable_default(bool AllObeliscs[], bool AllMessages[])
+{
+	fPlayerX = 1.0f;
+	fPlayerY = 1.0f;
+	fPlayerXBuf = fPlayerX;
+	fPlayerYBuf = fPlayerY;
+	fPlayerA = 0.0f;
+	fBufPlayerA = fPlayerA;
+	fSpeed = SPEED;
+	fSpeedCamera = 5.0f;
+
+	fFoV = 3.14159f / 1.78f;
+	fDepth = 26.0f;
+
+	for (int16_t i = 0; i < 5; i++)
+		AllObeliscs[i] = false;
+
+	for (int16_t i = 0; i < 14; i++)
+		AllMessages[i] = false;
+}
+
+void menu(wchar_t* console)
 {
 	bool AllObeliscs[5] = { false };
 	bool AllMessages[14] = { false };
@@ -16,6 +54,7 @@ void menu()
 	sound->setVolume(0.5f);
 	sound->setRepeat(true);
 
+	clearScreen();
 	color_meny(choose, arr_for_meny, num_str);
 
 	while (true)
@@ -24,22 +63,42 @@ void menu()
 		{
 		case 72: case 'w':
 			choose = (choose > 1) ? --choose : 1;
-			system("cls");
+			clearScreen();
 			color_meny(choose, arr_for_meny, num_str);
 			break;
 		case 80: case 's':
 			choose = (choose < 4) ? ++choose : 4;
-			system("cls");
+			clearScreen();
 			color_meny(choose, arr_for_meny, num_str);
 			break;
 		case 13:
-			if (choose == 1) { sound->stop(); game(AllObeliscs, AllMessages); } //запуск игры
-			else if (choose == 2) { continue_game(sound, AllObeliscs, AllMessages); } //взятие сохраненией, сохраниться можно на U
+			if (choose == 1) //запуск игры
+			{ 
+				sound->stop(); 
+				game(console, AllObeliscs, AllMessages); 
+				sound = OpenSound(device, "sounds/menu.ogg", true);
+				sound->play(); 
+				sound->setVolume(0.5f); 
+				sound->setRepeat(true); 
+			} 
+			else if (choose == 2) //взятие сохраненией, сохраниться можно на U
+			{ 
+				if (!continue_game(console, sound, AllObeliscs, AllMessages))
+				{
+					sound = OpenSound(device, "sounds/menu.ogg", true);
+					sound->play();
+					sound->setVolume(0.5f);
+					sound->setRepeat(true);
+				}
+			} 
 			else if (choose == 3) { authors(); }
 			else if (choose == 4) { control(); }
+
 			choose = 1;
-			system("cls");
+
+			clearScreen();
 			color_meny(choose, arr_for_meny, num_str);
+			variable_default(AllObeliscs, AllMessages);
 			break;
 		}
 	}
@@ -49,6 +108,7 @@ void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 {
 	HANDLE color;
 	color = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleActiveScreenBuffer(color); // Устанавливает заданный экранный буфер, чтобы он стал текущим отображаемым экранным буфером консоли
 	for (int8_t i = 0; i < num_str; i++)
 	{
 		if (i + 1 == choose)
@@ -378,7 +438,7 @@ bool game_over(wchar_t* console, wchar_t a)
 	{
 		for (int16_t y = 0; y < iConsoleHeight; y++)
 		{
-			if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000)							// Для скипа сообщения нажмите Enter
 				return true;
 
 			if (rand_flag != 0)
@@ -404,6 +464,19 @@ bool game_over(wchar_t* console, wchar_t a)
 		}
 	}
 	return false;
+}
+
+void epilogue(wchar_t* console, int16_t iObiliscCounter)
+{
+	if (iObiliscCounter == 5)
+	{
+
+	}
+
+	else
+	{
+
+	}
 }
 
 void map_pulling(wstring& map)
@@ -644,7 +717,7 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter,
 
 }
 
-void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[])  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
+bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[])  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
 {
 	wifstream file(L"save.txt");
 	wstring line, buf;
@@ -738,7 +811,7 @@ void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllM
 
 				if (menu == 0)
 				{
-					return;
+					return 1;
 				}
 
 				else if (menu <= whil && menu > 0)
@@ -784,14 +857,15 @@ void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllM
 
 	file.close();
 	sound->stop();
-	game(AllObeliscs, AllMessages, fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter, iMessageCount);
+	game(console, AllObeliscs, AllMessages, fPlayerX, fPlayerY, fPlayerA, Time, iObiliscCounter, iMessageCount);
+	return 0;
 }
 
-void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave, int16_t MessageCount)//сама игра
+void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, int16_t Time, int16_t iObiliscSave, int16_t MessageCount)//сама игра
 {
 
 	// Создаём буфер экрана
-	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
+	//wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	SetConsoleActiveScreenBuffer(hConsole);
 	DWORD dwBytesWritten = 0;
@@ -992,19 +1066,20 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 	// Игровой цикл
 	while (true)
 	{
-		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 5)    // Символ конца игры
+		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 1)    // Символ конца игры
 		{
 			game_over(console, 0x256C);
 
-			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 			{
-				//sound->stop();
-				//s2->stop();
-				//s3->stop();
-				//s4->stop();
-				//delete[] console;
-				//map.clear();
-				//menu();
+
+				sound->stop();
+				s2->stop();
+				s3->stop();
+				s4->stop();
+				map.clear();
+
+				return;
 			}
 		}
 																							// Клавишей "X" показываем карту
@@ -1069,7 +1144,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 				bScreamerOn = true;
 			}
 
-			if (GetAsyncKeyState(VK_RETURN) & 0x8000)
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 			{
 				iScreamDelay = 100;
 				bScreamerOn = false;
@@ -1087,7 +1162,7 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 			if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
 				|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
-				if (GetAsyncKeyState(VK_RETURN) & 0x8000)							// Для скипа сообщения нажмите Enter
+				if (GetAsyncKeyState(VK_SPACE) & 0x8000)							// Для скипа сообщения нажмите Enter
 				{
 					iMessageDelay++;
 
@@ -1542,7 +1617,8 @@ void game(bool AllObeliscs[], bool AllMessages[], float fX, float fY, float fA, 
 
 void authors()
 {
-	system("cls");
+	//system("cls");
+	clearScreen();
 	wcout <<
 		L"|->Разработчики:\n"
 		//"|-------------------------------------------------->>>\n"
@@ -1559,7 +1635,8 @@ void authors()
 
 void control()
 {
-	system("cls");
+	//system("cls");
+	clearScreen();
 
 	wcout <<
 		L"|-------------------------------->>>\n"

@@ -53,23 +53,26 @@ extern float fDepth;
 // преобразования символов при чтении из файла в кодировке UTF-8
 const locale utf8_locale = locale(locale(), new codecvt_utf8<wchar_t>());
 
-void menu();
+void menu(wchar_t* console);
 void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str);
+void clearScreen();
+void variable_default(bool AllObeliscs[], bool AllMessages[]);
 
 void map_pulling(wstring& map);
 bool corners(float& fEyeX, float& fEyeY, int16_t& nTestX, int16_t& nTestY);
 
 void screamer(wchar_t* console);
 bool game_over(wchar_t* console, wchar_t a);
+void epilogue(wchar_t* console, int16_t iObiliscCounter);
 int16_t letter(wchar_t* console, int16_t iObeliscCount);
 void controls_info(wchar_t* console);
 void message_info(wchar_t* console, bool AllMessages[]);
 void open_map(wchar_t* console, wstring map);
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter, int16_t MessageCount, bool AllMessange[], bool AllObeliscs[]);
-void game(bool AllObeliscs[], bool AllMessages[], float fX = 1.0f, float fY = 1.0f, float fA = 1.0f, int16_t Time = 0, int16_t iObiliscSave = 0,
+void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX = 1.0f, float fY = 1.0f, float fA = 1.0f, int16_t Time = 0, int16_t iObiliscSave = 0,
     int16_t iMessangeCount = 0);
-void continue_game(audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[]);
+bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[]);
 void authors();
 void control();
 
