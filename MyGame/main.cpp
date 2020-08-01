@@ -30,7 +30,7 @@ int main()
 	SetWindowPos(window_header, HWND_TOP, 0, 30, 1100, 690, NULL);*/
 	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 
-	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze - beta v2.0");		// Меняем название консоли
+	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze - beta v2.1");		// Меняем название консоли
 	SetConsoleTitle(ConsoleTitle);
 
 	menu(console);

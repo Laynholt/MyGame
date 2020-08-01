@@ -434,7 +434,7 @@ bool game_over(wchar_t* console, wchar_t a)
 {
 	int16_t rand_flag = rand() % 10;
 
-	for (int16_t x = 0; x < iConsoleWidth; x++)
+	for (int16_t x = 0; x < iConsoleWidth - 5; x++)
 	{
 		for (int16_t y = 0; y < iConsoleHeight; y++)
 		{
@@ -448,16 +448,29 @@ bool game_over(wchar_t* console, wchar_t a)
 
 			else
 			{
-				console[y * iConsoleWidth + x] = 'G';
-				console[y * iConsoleWidth + x + 1] = 'A';
-				console[y * iConsoleWidth + x + 2] = 'M';
-				console[y * iConsoleWidth + x + 3] = 'E';
-				console[y * iConsoleWidth + x + 4] = ' ';
-				console[y * iConsoleWidth + x + 5] = 'O';
-				console[y * iConsoleWidth + x + 6] = 'V';
-				console[y * iConsoleWidth + x + 7] = 'E';
-				console[y * iConsoleWidth + x + 8] = 'R';
-				y += 8;
+				//console[y * iConsoleWidth + x] = 'G';
+				//console[y * iConsoleWidth + x + 1] = 'A';
+				//console[y * iConsoleWidth + x + 2] = 'M';
+				//console[y * iConsoleWidth + x + 3] = 'E';
+				//console[y * iConsoleWidth + x + 4] = ' ';
+				//console[y * iConsoleWidth + x + 5] = 'O';
+				//console[y * iConsoleWidth + x + 6] = 'V';
+				//console[y * iConsoleWidth + x + 7] = 'E';
+				//console[y * iConsoleWidth + x + 8] = 'R';
+				console[y * iConsoleWidth + x] = 'T';
+				console[y * iConsoleWidth + x + 1] = 'H';
+				console[y * iConsoleWidth + x + 2] = 'E';
+				console[y * iConsoleWidth + x + 3] = ' ';
+				console[y * iConsoleWidth + x + 4] = 'E';
+				console[y * iConsoleWidth + x + 5] = 'N';
+				console[y * iConsoleWidth + x + 6] = 'D';
+				console[y * iConsoleWidth + x + 7] = ' ';
+				console[y * iConsoleWidth + x + 8] = 'G';
+				console[y * iConsoleWidth + x + 9] = 'A';
+				console[y * iConsoleWidth + x + 10] = 'M';
+				console[y * iConsoleWidth + x + 11] = 'E';
+				y += 11;
+				//y += 8;
 			}
 
 			rand_flag = rand() % 3;
@@ -1072,6 +1085,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 
 			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
 			{
+				_getch();
 
 				sound->stop();
 				s2->stop();
