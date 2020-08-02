@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Включаемый файл, созданный в Microsoft Visual C++.
-// Используется Icon.rc
+// Используется MyGame.rc
 //
 #define IDI_ICON1                       101
 
