@@ -77,4 +77,3 @@ void authors();
 void control();
 
 #endif // !_LIBFUNVAR_H_
-

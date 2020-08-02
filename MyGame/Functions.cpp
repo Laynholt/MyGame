@@ -433,7 +433,7 @@ bool game_over(wchar_t* console, wchar_t a)
 	{
 		for (int16_t y = 0; y < iConsoleHeight; y++)
 		{
-			if (GetAsyncKeyState(VK_SPACE) & 0x8000)							// Для скипа сообщения нажмите Enter
+			if (GetAsyncKeyState(VK_SPACE) & 0x8000)							
 				return true;
 
 			if (rand_flag != 0)
@@ -1767,15 +1767,13 @@ void authors()
 {
 	clearScreen();
 	wcout <<
-		L"|->Разработчики:\n"
-		//"|-------------------------------------------------->>>\n"
+	    L"|->Разработчики:\n"
 		"|               -> [...\\laynholt]\n"
 		"|               -> [...\\marco_dragan]\n"
 		"|-------------------------------------------------->>>\n"
 		"|->Отдельная благодарность [@Javidx9]\n"
 		"|->Репозиторий: https://github.com/VariableRiw/MyGame \n"
 		"|-------------------------------------------------->>>\n";
-
 
 	system("pause");
 }
@@ -1798,7 +1796,6 @@ void control()
 		"|>> [TAB] - Вкл./Выкл. миникарту\n"
 		"|>> [ESC] - Выход в главное меню\n"
 		"|--------------------------------------------------------->>>\n";
-
 
 	system("pause");
 }
