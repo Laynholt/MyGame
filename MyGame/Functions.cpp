@@ -1117,6 +1117,84 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 				return;
 			}
 		}
+												// Клавиша выхода в главное меню
+		else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+		{
+			char choose = ' ';
+			wstring a = { L"Выход в главное меню" };
+			wstring b = { L"1] С сохранением    " };
+			wstring c = { L"2] Без сохранения   " };
+			wstring d = { L"3] Отмена           " };
+
+			while (choose != '3')
+			{
+				int16_t nx, ny, i;
+				i = -1;
+				choose = _getch();
+
+				// Обводка выхода
+				int16_t iMapCorner1 = 0x2551;
+				int16_t iMapCorner2 = 0x2550;
+
+				for (nx = (iConsoleWidth / 2 - 11); nx < (iConsoleWidth / 2 + 11); nx++, i++)
+				{
+					for (ny = (iConsoleHeight / 2 - 3); ny < (iConsoleHeight / 2 + 3); ny++)
+					{
+						if (nx == iConsoleWidth / 2 - 11)											// Левая вертикальная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner1;
+						else if (ny == iConsoleHeight / 2 - 3)										// Верхняя горизонтальная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner2;
+						else if (ny == iConsoleHeight / 2 + 2)										// Нижняя горизонтальная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner2;
+						else if (nx == iConsoleWidth / 2 + 10)										// Правая вертикольная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+						if (nx == iConsoleWidth / 2 - 11 && ny == iConsoleHeight / 2 - 3)
+							console[ny * iConsoleWidth + nx] = 0x2554;				// Левый верний угол
+						else if (nx == iConsoleWidth / 2 + 10 && ny == iConsoleHeight / 2 - 3)
+							console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+						else if (nx == iConsoleWidth / 2 - 11 && ny == iConsoleHeight / 2 + 2)
+							console[ny * iConsoleWidth + nx] = 0x255A;				// Левый нижний угол
+						else if (nx == iConsoleWidth / 2 + 10 && ny == iConsoleHeight / 2 + 2)
+							console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+
+						if (nx > (iConsoleWidth / 2 - 11) && nx < (iConsoleWidth / 2 + 10))
+						{
+							if (ny == (iConsoleHeight / 2 - 2))
+								console[ny * iConsoleWidth + nx] = a[i];
+							else if (ny == (iConsoleHeight / 2 - 1))
+								console[ny * iConsoleWidth + nx] = b[i];
+							else if (ny == (iConsoleHeight / 2))
+								console[ny * iConsoleWidth + nx] = c[i];
+							else if (ny == (iConsoleHeight / 2 + 1))
+								console[ny * iConsoleWidth + nx] = d[i];
+						}
+					}
+				}
+				WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight* iConsoleWidth, { 0,0 }, & dwBytesWritten);
+
+				if (choose == '1')
+				{
+					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter, iMessageCount, AllMessages, AllObeliscs);
+					sound->stop();
+					s2->stop();
+					s3->stop();
+					s4->stop();
+					map.clear();
+					return;
+				}
+
+				else if (choose == '2')
+				{
+					sound->stop();
+					s2->stop();
+					s3->stop();
+					s4->stop();
+					map.clear();
+					return;
+				}
+			}
+		}
 																							// Клавишей "X" показываем карту
 		else if ((GetAsyncKeyState((unsigned short)'X') & 0x8000 || bMapIsOpen == true) && bScreamerOn == false 
 			&& (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '?' && map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] != '&'))
