@@ -24,10 +24,14 @@ int main()
 	_setmode(_fileno(stderr), _O_U16TEXT);
 
 	srand(time(NULL));
-	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
+	//system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 
-	/*HWND window_header = GetConsoleWindow();
-	SetWindowPos(window_header, HWND_TOP, 0, 30, 1100, 690, NULL);*/
+	HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD maxWindow = GetLargestConsoleWindowSize(out_handle);
+
+	HWND window_header = GetConsoleWindow();
+	SetWindowPos(window_header, HWND_TOP, maxWindow.X, maxWindow.Y, 1115, 690, NULL);
+
 	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 
 	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze - beta v2.1 (PreRelease)");		// Меняем название консоли
