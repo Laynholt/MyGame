@@ -245,18 +245,20 @@ void message_info(wchar_t* console, bool AllMessages[])
 	}
 }
 
-int16_t letter(wchar_t* console, int16_t iObeliscCount)
+int16_t letter(wchar_t* console, int16_t iObeliscCount, int16_t n)
 {
-	int16_t n = 0;
 	int32_t i = 0, j = 0;
 	int16_t A, B, C, D;
 							// Фразы майора
-	wstring path[20] = { L"text/maior/begin.txt", L"text/maior/ob1.txt", L"text/maior/ob2.txt", L"text/maior/ob3.txt", L"text/maior/ob4.txt",
+	wstring path[26] = { L"text/maior/begin.txt", L"text/maior/ob1.txt", L"text/maior/ob2.txt", L"text/maior/ob3.txt", L"text/maior/ob4.txt",
 		L"text/letters/let1.txt", L"text/letters/let2.txt", L"text/letters/let3.txt", // Письма
 		L"text/diaries/da3_1.txt", L"text/diaries/da5_1.txt", L"text/diaries/da5_2.txt", L"text/diaries/da8_1.txt", L"text/diaries/da10_1.txt", 
 		L"text/diaries/da10_2.txt", L"text/diaries/da10_3.txt", L"text/diaries/da10_4.txt", L"text/diaries/da42_1.txt", L"text/diaries/da42_2.txt", 
 		L"text/diaries/da87_S.txt",		// Дневники
-		L"text/bandersnatch/mon.txt" }; // Монолог
+		L"text/bandersnatch/mon.txt",  // Монолог
+		L"text/epilogue/endob1.txt", L"text/epilogue/endob2.txt", L"text/epilogue/endob3.txt", L"text/epilogue/endob4.txt",  // Обелиск концовка
+		L"text/epilogue/endov1.txt", L"text/epilogue/endov2.txt"
+	};
 	const int16_t M = 29; // строк
 
 	A = iConsoleWidth / 5;
@@ -264,33 +266,33 @@ int16_t letter(wchar_t* console, int16_t iObeliscCount)
 	C = iConsoleHeight / 6;
 	D = iConsoleHeight - iConsoleHeight / 6;
 
-	// Выбираем, какое сообщение загружать
-	if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 8 && (int16_t)fPlayerY <= 9) { n = 0; }  
-	else if ((int16_t)fPlayerX >= 17 && (int16_t)fPlayerX <= 18 && (int16_t)fPlayerY >= 52 && (int16_t)fPlayerY <= 53 && iObeliscCount == 1) { n = 1; }
-	else if ((int16_t)fPlayerX >= 31 && (int16_t)fPlayerX <= 32 && (int16_t)fPlayerY >= 96 && (int16_t)fPlayerY <= 97) { n = 2; }
-	else if ((int16_t)fPlayerX >= 109 && (int16_t)fPlayerX <= 110 && (int16_t)fPlayerY >= 60 && (int16_t)fPlayerY <= 62) { n = 3; }
-	else if ((int16_t)fPlayerX >= 86 && (int16_t)fPlayerX <= 87 && (int16_t)fPlayerY >= 13 && (int16_t)fPlayerY <= 14) { n = 4; }
+	if (n == 0)	// Если не концовка
+	{	// Выбираем, какое сообщение загружать
+		if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 8 && (int16_t)fPlayerY <= 9) { n = 0; }
+		else if ((int16_t)fPlayerX >= 17 && (int16_t)fPlayerX <= 18 && (int16_t)fPlayerY >= 52 && (int16_t)fPlayerY <= 53 && iObeliscCount == 1) { n = 1; }
+		else if ((int16_t)fPlayerX >= 31 && (int16_t)fPlayerX <= 32 && (int16_t)fPlayerY >= 96 && (int16_t)fPlayerY <= 97) { n = 2; }
+		else if ((int16_t)fPlayerX >= 109 && (int16_t)fPlayerX <= 110 && (int16_t)fPlayerY >= 60 && (int16_t)fPlayerY <= 62) { n = 3; }
+		else if ((int16_t)fPlayerX >= 86 && (int16_t)fPlayerX <= 87 && (int16_t)fPlayerY >= 13 && (int16_t)fPlayerY <= 14) { n = 4; }
 
-	else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 53 && (int16_t)fPlayerY <= 54) { n = 5; }
-	else if ((int16_t)fPlayerX >= 184 && (int16_t)fPlayerX <= 185 && (int16_t)fPlayerY >= 78 && (int16_t)fPlayerY <= 79) { n = 6; }
-	else if ((int16_t)fPlayerX >= 64 && (int16_t)fPlayerX <= 65 && (int16_t)fPlayerY >= 21 && (int16_t)fPlayerY <= 22) { n = 7; }
+		else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 53 && (int16_t)fPlayerY <= 54) { n = 5; }
+		else if ((int16_t)fPlayerX >= 184 && (int16_t)fPlayerX <= 185 && (int16_t)fPlayerY >= 78 && (int16_t)fPlayerY <= 79) { n = 6; }
+		else if ((int16_t)fPlayerX >= 64 && (int16_t)fPlayerX <= 65 && (int16_t)fPlayerY >= 21 && (int16_t)fPlayerY <= 22) { n = 7; }
 
-	else if ((int16_t)fPlayerX >= 33 && (int16_t)fPlayerX <= 34 && (int16_t)fPlayerY >= 1 && (int16_t)fPlayerY <= 2) { n = 8; }
-	else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 75 && (int16_t)fPlayerY <= 76) { n = 9; }
-	else if ((int16_t)fPlayerX >= 162 && (int16_t)fPlayerX <= 163 && (int16_t)fPlayerY >= 98 && (int16_t)fPlayerY <= 99) { n = 10; }
-	else if ((int16_t)fPlayerX >= 182 && (int16_t)fPlayerX <= 183 && (int16_t)fPlayerY >= 98 && (int16_t)fPlayerY <= 99) { n = 11; }
-	else if ((int16_t)fPlayerX >= 34 && (int16_t)fPlayerX <= 35 && (int16_t)fPlayerY >= 56 && (int16_t)fPlayerY <= 57) { n = 12; }
-	else if ((int16_t)fPlayerX >= 46 && (int16_t)fPlayerX <= 47 && (int16_t)fPlayerY >= 38 && (int16_t)fPlayerY <= 39) { n = 13; }
-	else if ((int16_t)fPlayerX >= 112 && (int16_t)fPlayerX <= 113 && (int16_t)fPlayerY >= 50 && (int16_t)fPlayerY <= 51) { n = 14; }
-	else if ((int16_t)fPlayerX >= 198 && (int16_t)fPlayerX <= 199 && (int16_t)fPlayerY >= 10 && (int16_t)fPlayerY <= 11) { n = 15; }
-	else if ((int16_t)fPlayerX >= 33 && (int16_t)fPlayerX <= 34 && (int16_t)fPlayerY >= 19 && (int16_t)fPlayerY <= 20) { n = 16; }
-	else if ((int16_t)fPlayerX >= 82 && (int16_t)fPlayerX <= 83 && (int16_t)fPlayerY >= 7 && (int16_t)fPlayerY <= 8) { n = 17; }
+		else if ((int16_t)fPlayerX >= 33 && (int16_t)fPlayerX <= 34 && (int16_t)fPlayerY >= 1 && (int16_t)fPlayerY <= 2) { n = 8; }
+		else if ((int16_t)fPlayerX >= 1 && (int16_t)fPlayerX <= 2 && (int16_t)fPlayerY >= 75 && (int16_t)fPlayerY <= 76) { n = 9; }
+		else if ((int16_t)fPlayerX >= 162 && (int16_t)fPlayerX <= 163 && (int16_t)fPlayerY >= 98 && (int16_t)fPlayerY <= 99) { n = 10; }
+		else if ((int16_t)fPlayerX >= 182 && (int16_t)fPlayerX <= 183 && (int16_t)fPlayerY >= 98 && (int16_t)fPlayerY <= 99) { n = 11; }
+		else if ((int16_t)fPlayerX >= 34 && (int16_t)fPlayerX <= 35 && (int16_t)fPlayerY >= 56 && (int16_t)fPlayerY <= 57) { n = 12; }
+		else if ((int16_t)fPlayerX >= 46 && (int16_t)fPlayerX <= 47 && (int16_t)fPlayerY >= 38 && (int16_t)fPlayerY <= 39) { n = 13; }
+		else if ((int16_t)fPlayerX >= 112 && (int16_t)fPlayerX <= 113 && (int16_t)fPlayerY >= 50 && (int16_t)fPlayerY <= 51) { n = 14; }
+		else if ((int16_t)fPlayerX >= 198 && (int16_t)fPlayerX <= 199 && (int16_t)fPlayerY >= 10 && (int16_t)fPlayerY <= 11) { n = 15; }
+		else if ((int16_t)fPlayerX >= 33 && (int16_t)fPlayerX <= 34 && (int16_t)fPlayerY >= 19 && (int16_t)fPlayerY <= 20) { n = 16; }
+		else if ((int16_t)fPlayerX >= 82 && (int16_t)fPlayerX <= 83 && (int16_t)fPlayerY >= 7 && (int16_t)fPlayerY <= 8) { n = 17; }
 
-	else if ((int16_t)fPlayerX >= 198 && (int16_t)fPlayerX <= 199 && (int16_t)fPlayerY >= 27 && (int16_t)fPlayerY <= 28) { n = 18; }
+		else if ((int16_t)fPlayerX >= 198 && (int16_t)fPlayerX <= 199 && (int16_t)fPlayerY >= 27 && (int16_t)fPlayerY <= 28) { n = 18; }
 
-	else if ((int16_t)fPlayerX >= 161 && (int16_t)fPlayerX <= 162 && (int16_t)fPlayerY >= 53 && (int16_t)fPlayerY <= 54) { n = 19; }
-
-
+		else if ((int16_t)fPlayerX >= 161 && (int16_t)fPlayerX <= 162 && (int16_t)fPlayerY >= 53 && (int16_t)fPlayerY <= 54) { n = 19; }
+	}
 	
 	wifstream in(path[n]);
 	if (!in.is_open())
@@ -479,16 +481,35 @@ bool game_over(wchar_t* console, wchar_t a)
 	return false;
 }
 
-void epilogue(wchar_t* console, int16_t iObiliscCounter)
+void epilogue(wchar_t* console, int16_t iObiliscCounter, bool type, int16_t n)
 {
-	if (iObiliscCounter == 5)
+	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+	SetConsoleActiveScreenBuffer(hConsole);
+	DWORD dwBytesWritten = 0;
+
+	game_over(console, 0x256C);
+	letter(console, iObiliscCounter, n);
+	WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight * iConsoleWidth, { 0,0 }, &dwBytesWritten);
+
+	while (_getch() != ' ')
 	{
 
 	}
 
+	if (type == 0)
+	{
+		if (n < 23)							// Для скипа сообщения нажмите Enter
+		{
+			epilogue(console, iObiliscCounter, type, n + 1);
+		}
+	}
+
 	else
 	{
-
+		if (n < 25)							// Для скипа сообщения нажмите Enter
+		{
+			epilogue(console, iObiliscCounter, type, n + 1);
+		}
 	}
 }
 
@@ -892,6 +913,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 	bool bScreamShock = true;
 	bool bMessageInfoIsOpen = false;
 	bool bControlsInfoIsOpen = false;
+	bool bGameIsEnd = false;
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -1079,14 +1101,12 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 	// Игровой цикл
 	while (true)
 	{
-		if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%' || iObiliscCounter == 1)    // Символ конца игры
+		if (bGameIsEnd)    // Символ конца игры
 		{
 			game_over(console, 0x256C);
 
-			if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+			if (_getch() == ' ')
 			{
-				_getch();
-
 				sound->stop();
 				s2->stop();
 				s3->stop();
@@ -1187,6 +1207,20 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 						AllMessages[iNumberMessange] = true;
 					}
 				}
+		}
+
+		else if (iObiliscCounter == 5)    // Концовка (0 - обелиск, 1 - %)
+		{
+			epilogue(console, iObiliscCounter, 0);
+			bGameIsEnd = true;
+			SetConsoleActiveScreenBuffer(hConsole);
+		}
+
+		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '%')    // Концовка (0 - обелиск, 1 - %)
+		{
+			epilogue(console, iObiliscCounter, 1, 24);
+			bGameIsEnd = true;
+			SetConsoleActiveScreenBuffer(hConsole);
 		}
 
 		else if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == 'O')	// Обелиск
@@ -1631,7 +1665,6 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 
 void authors()
 {
-	//system("cls");
 	clearScreen();
 	wcout <<
 		L"|->Разработчики:\n"
@@ -1649,7 +1682,6 @@ void authors()
 
 void control()
 {
-	//system("cls");
 	clearScreen();
 
 	wcout <<
