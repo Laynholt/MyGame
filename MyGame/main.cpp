@@ -41,5 +41,7 @@ int main()
 
 	menu(console);
 
+	delete[] console;
+
 	return 0;
 }
