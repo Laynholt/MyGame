@@ -127,7 +127,7 @@ void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
 void controls_info(wchar_t* console)
 {
 	vector<wstring> v;
-	int16_t i = 0, j = 0;
+	int16_t i = -1, j = -1;
 	int16_t nx, nx1, ny, ny1;
 
 	v.push_back(L"[W] - Идти вперёд               ");
@@ -140,28 +140,20 @@ void controls_info(wchar_t* console)
 	v.push_back(L"[I] - Информация об управлении  ");
 	v.push_back(L"[X] - Показать карту            ");
 	v.push_back(L"[TAB] - Вкл./Выкл. миникарту    ");
+	v.push_back(L"[ESC] - Выход в главное меню    ");
 
-	for (nx = 1; nx < 34; nx++, i++)
-	{
-		for (ny = 17; ny < 27; ny++, j++)
-		{
-			console[ny * iConsoleWidth + nx] = v[j][i];
-		}
-		j = 0;
-	}
-
-	// Обводка окна
+	// Обводка окна и само сообщение
 	int16_t iMapCorner1 = 0x2551;
 	int16_t iMapCorner2 = 0x2550;
-	for (nx = 0; nx < 35; nx++)
+	for (nx = 0; nx < 35; nx++, i++)
 	{
-		for (ny = 16; ny < 28; ny++)
+		for (ny = 16; ny < 29; ny++, j++)
 		{
 			if (nx == 0)											// Левая вертикальная граница
 				console[ny * iConsoleWidth + nx] = iMapCorner1;
 			else if (ny == 16)										// Верхняя горизонтальная граница
 				console[ny * iConsoleWidth + nx] = iMapCorner2;
-			else if (ny == 27)										// Нижняя горизонтальная граница
+			else if (ny == 28)										// Нижняя горизонтальная граница
 				console[ny * iConsoleWidth + nx] = iMapCorner2;
 			else if (nx == 34)										// Правая вертикольная граница
 				console[ny * iConsoleWidth + nx] = iMapCorner1;
@@ -170,57 +162,30 @@ void controls_info(wchar_t* console)
 				console[ny * iConsoleWidth] = 0x2554;				// Левый верний угол
 			else if (nx == 34 && ny == 16)
 				console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
-			else if (nx == 0 && ny == 27)
+			else if (nx == 0 && ny == 28)
 				console[ny * iConsoleWidth] = 0x255A;				// Левый нижний угол
-			else if (nx == 34 && ny == 27)
+			else if (nx == 34 && ny == 28)
 				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+
+			if (nx > 0 && nx < 34 && ny > 16 && ny < 28)			// Запонение сообщением
+				console[ny * iConsoleWidth + nx] = v[j][i];
 		}
+		j = -1;
 	}
 }
 
 void message_info(wchar_t* console, bool AllMessages[])
 {
-	int16_t i = 0, j = 1, k = 0;
+	int16_t i = -1, j = 1, k = 0;
 	int16_t nx, nx1, ny, ny1;
 	wstring a = { L"Записка № " };
 	wstring b = { L" найдена   " };
 	wstring c = { L" не найдена" };
 
-	for (nx = 1; nx < 24; nx++, i++)
-	{
-		for (ny = 17; ny < 31; ny++)
-		{	
-			if (nx == i + 1 && nx <= a.length() && ny >= 17)
-				console[ny * iConsoleWidth + nx] = a[i];
-			else if (nx >= a.length() + 1 && nx <= a.length() + 2 && ny >= 17)
-			{
-				console[ny * iConsoleWidth + nx] = '0' + j;
-				if (j == 9)
-					j = 0;
-				else if (ny == 29)
-					j = 16;
-				j++;
-			}
-
-			else if (AllMessages[ny - 17] == true)
-			{
-				console[ny * iConsoleWidth + nx] = b[k];
-			}
-
-			else if (AllMessages[ny - 17] == false)
-			{
-				console[ny * iConsoleWidth + nx] = c[k];
-			}
-		}
-
-		if (nx >= 13)
-			k++;
-	}
-
 	// Обводка окна
 	int16_t iMapCorner1 = 0x2551;
 	int16_t iMapCorner2 = 0x2550;
-	for (nx = 0; nx < 25; nx++)
+	for (nx = 0; nx < 25; nx++, i++)
 	{
 		for (ny = 16; ny < 32; ny++)
 		{
@@ -241,7 +206,35 @@ void message_info(wchar_t* console, bool AllMessages[])
 				console[ny * iConsoleWidth] = 0x255A;				// Левый нижний угол
 			else if (nx == 24 && ny == 31)
 				console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+
+			// Заполнение текстом
+			if (nx > 0 && nx < 24 && ny > 16 && ny < 31)
+			{
+				if (nx == i + 1 && nx <= a.length())
+					console[ny * iConsoleWidth + nx] = a[i];
+				else if (nx >= a.length() + 1 && nx <= a.length() + 2)
+				{
+					console[ny * iConsoleWidth + nx] = '0' + j;
+					if (j == 9)
+						j = 0;
+					else if (ny == 29)
+						j = 16;
+					j++;
+				}
+
+				else if (AllMessages[ny - 17] == true)
+				{
+					console[ny * iConsoleWidth + nx] = b[k];
+				}
+
+				else if (AllMessages[ny - 17] == false)
+				{
+					console[ny * iConsoleWidth + nx] = c[k];
+				}
+			}
 		}
+		if (nx >= 13)
+			k++;
 	}
 }
 
@@ -450,15 +443,6 @@ bool game_over(wchar_t* console, wchar_t a)
 
 			else
 			{
-				//console[y * iConsoleWidth + x] = 'G';
-				//console[y * iConsoleWidth + x + 1] = 'A';
-				//console[y * iConsoleWidth + x + 2] = 'M';
-				//console[y * iConsoleWidth + x + 3] = 'E';
-				//console[y * iConsoleWidth + x + 4] = ' ';
-				//console[y * iConsoleWidth + x + 5] = 'O';
-				//console[y * iConsoleWidth + x + 6] = 'V';
-				//console[y * iConsoleWidth + x + 7] = 'E';
-				//console[y * iConsoleWidth + x + 8] = 'R';
 				console[y * iConsoleWidth + x] = 'T';
 				console[y * iConsoleWidth + x + 1] = 'H';
 				console[y * iConsoleWidth + x + 2] = 'E';
@@ -472,7 +456,6 @@ bool game_over(wchar_t* console, wchar_t a)
 				console[y * iConsoleWidth + x + 10] = 'M';
 				console[y * iConsoleWidth + x + 11] = 'E';
 				y += 11;
-				//y += 8;
 			}
 
 			rand_flag = rand() % 3;
@@ -491,10 +474,7 @@ void epilogue(wchar_t* console, int16_t iObiliscCounter, bool type, int16_t n)
 	letter(console, iObiliscCounter, n);
 	WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight * iConsoleWidth, { 0,0 }, &dwBytesWritten);
 
-	while (_getch() != ' ')
-	{
-
-	}
+	while (_getch() != ' ') {}
 
 	if (type == 0)
 	{
@@ -910,11 +890,11 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 	bool bMinimap = true;							// Миникарта вкл
 	bool bMapIsOpen = false;						// Признак открытой карты
 	bool bScreamerOn = false;						// Признак скримера
-	bool bScreamShock = true;
-	bool bMessageInfoIsOpen = false;
-	bool bControlsInfoIsOpen = false;
-	bool bGameIsEnd = false;
-	bool bGameIsSave = false;
+	bool bScreamShock = true;						// 
+	bool bMessageInfoIsOpen = false;				// Признак открытой менюшки о сообщениях
+	bool bControlsInfoIsOpen = false;				// Признак открытой менюшки управления
+	bool bGameIsEnd = false;						// Признак конца игры
+	bool bGameIsSave = false;						// Признак сохранения игры
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -1115,6 +1095,84 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 				map.clear();
 
 				return;
+			}
+		}
+												// Клавиша выхода в главное меню
+		else if (GetAsyncKeyState(VK_ESCAPE) & 0x8000)
+		{
+			char choose = ' ';
+			wstring a = { L"Выход в главное меню" };
+			wstring b = { L"1] С сохранением    " };
+			wstring c = { L"2] Без сохранения   " };
+			wstring d = { L"3] Отмена           " };
+
+			while (choose != '3')
+			{
+				int16_t nx, ny, i;
+				i = -1;
+				choose = _getch();
+
+				// Обводка выхода
+				int16_t iMapCorner1 = 0x2551;
+				int16_t iMapCorner2 = 0x2550;
+
+				for (nx = (iConsoleWidth / 2 - 11); nx < (iConsoleWidth / 2 + 11); nx++, i++)
+				{
+					for (ny = (iConsoleHeight / 2 - 3); ny < (iConsoleHeight / 2 + 3); ny++)
+					{
+						if (nx == iConsoleWidth / 2 - 11)											// Левая вертикальная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner1;
+						else if (ny == iConsoleHeight / 2 - 3)										// Верхняя горизонтальная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner2;
+						else if (ny == iConsoleHeight / 2 + 2)										// Нижняя горизонтальная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner2;
+						else if (nx == iConsoleWidth / 2 + 10)										// Правая вертикольная граница
+							console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+						if (nx == iConsoleWidth / 2 - 11 && ny == iConsoleHeight / 2 - 3)
+							console[ny * iConsoleWidth + nx] = 0x2554;				// Левый верний угол
+						else if (nx == iConsoleWidth / 2 + 10 && ny == iConsoleHeight / 2 - 3)
+							console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+						else if (nx == iConsoleWidth / 2 - 11 && ny == iConsoleHeight / 2 + 2)
+							console[ny * iConsoleWidth + nx] = 0x255A;				// Левый нижний угол
+						else if (nx == iConsoleWidth / 2 + 10 && ny == iConsoleHeight / 2 + 2)
+							console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+
+						if (nx > (iConsoleWidth / 2 - 11) && nx < (iConsoleWidth / 2 + 10))
+						{
+							if (ny == (iConsoleHeight / 2 - 2))
+								console[ny * iConsoleWidth + nx] = a[i];
+							else if (ny == (iConsoleHeight / 2 - 1))
+								console[ny * iConsoleWidth + nx] = b[i];
+							else if (ny == (iConsoleHeight / 2))
+								console[ny * iConsoleWidth + nx] = c[i];
+							else if (ny == (iConsoleHeight / 2 + 1))
+								console[ny * iConsoleWidth + nx] = d[i];
+						}
+					}
+				}
+				WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight* iConsoleWidth, { 0,0 }, & dwBytesWritten);
+
+				if (choose == '1')
+				{
+					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter, iMessageCount, AllMessages, AllObeliscs);
+					sound->stop();
+					s2->stop();
+					s3->stop();
+					s4->stop();
+					map.clear();
+					return;
+				}
+
+				else if (choose == '2')
+				{
+					sound->stop();
+					s2->stop();
+					s3->stop();
+					s4->stop();
+					map.clear();
+					return;
+				}
 			}
 		}
 																							// Клавишей "X" показываем карту
@@ -1738,6 +1796,7 @@ void control()
 		"|>> [I] - Информация об управлении\n"
 		"|>> [X] - Показать карту\n"
 		"|>> [TAB] - Вкл./Выкл. миникарту\n"
+		"|>> [ESC] - Выход в главное меню\n"
 		"|--------------------------------------------------------->>>\n";
 
 
