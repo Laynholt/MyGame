@@ -1,6 +1,7 @@
 #ifndef _LIBFUNVAR_H_
 #define _LIBFUNVAR_H_
 #define _CRT_SECURE_NO_WARNINGS
+#define _WIN32_WINNT 0x0500
 
 // Для локали
 #include <io.h>      // для функции _setmode
@@ -25,7 +26,6 @@
 #include <algorithm>
 // Для иконки
 #include "resource.h"
-
 
 using namespace std;
 
