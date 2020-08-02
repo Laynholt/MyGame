@@ -914,6 +914,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 	bool bMessageInfoIsOpen = false;
 	bool bControlsInfoIsOpen = false;
 	bool bGameIsEnd = false;
+	bool bGameIsSave = false;
 
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
@@ -1313,6 +1314,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 				{
 					save(fPlayerX, fPlayerY, (int16_t)fStopwatch, iObiliscCounter, iMessageCount, AllMessages, AllObeliscs);
 					iSaveDelay = (int16_t)fStopwatch;
+					bGameIsSave = true;
 				}
 			}
 
@@ -1649,6 +1651,46 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 							console[ny * iConsoleWidth] = 0x255A;				// Левый нижний угол
 						else if (nx == 27 && ny == 15)
 							console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+					}
+				}
+
+				if (bGameIsSave)												// Вывод сохранения игры
+				{
+					if (iSaveDelay + 4 <= (int16_t)fStopwatch)
+						bGameIsSave = false;
+
+					wstring a = { L"Игра сохранена." };
+
+					// Обводка сохранения
+					int16_t iMapCorner1 = 0x2551;
+					int16_t iMapCorner2 = 0x2550;
+					int16_t nx, ny;
+
+					for (nx = 28; nx < 45; nx++)
+					{
+						for (ny = 1; ny < 4; ny++)
+						{
+							if (nx == 28)											// Левая вертикальная граница
+								console[ny * iConsoleWidth + nx] = iMapCorner1;
+							else if (ny == 1)										// Верхняя горизонтальная граница
+								console[ny * iConsoleWidth + nx] = iMapCorner2;
+							else if (ny == 3)										// Нижняя горизонтальная граница
+								console[ny * iConsoleWidth + nx] = iMapCorner2;
+							else if (nx == 44)										// Правая вертикольная граница
+								console[ny * iConsoleWidth + nx] = iMapCorner1;
+
+							if (nx == 28 && ny == 1)
+								console[ny * iConsoleWidth + nx] = 0x2554;				// Левый верний угол
+							else if (nx == 44 && ny == 1)
+								console[ny * iConsoleWidth + nx] = 0x2557;			// Правый верний угол
+							else if (nx == 28 && ny == 3)
+								console[ny * iConsoleWidth + nx] = 0x255A;				// Левый нижний угол
+							else if (nx == 44 && ny == 3)
+								console[ny * iConsoleWidth + nx] = 0x255D;			// Правый нижний угол
+
+							if (ny == 2 && nx > 28 && nx < 44)
+								console[ny * iConsoleWidth + nx] = a[nx - 29];		// Сообщение
+						}
 					}
 				}
 			}
