@@ -156,7 +156,6 @@ void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, co
 		WriteConsoleOutputCharacter(hConsole, music[i], str_size, coord, &dwBytesWritten);
 	}
 													// Версия игры
-	const wchar_t* version = { L"Версия игры: beta v2.6 (PreRelease)" };
 	str_size = counting_symbols(version);
 	coord.X = iConsoleWidth - str_size; coord.Y = 39;
 	WriteConsoleOutputCharacter(hConsole, version, str_size, coord, &dwBytesWritten);

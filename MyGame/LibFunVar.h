@@ -51,6 +51,8 @@ extern int16_t iStamina;                    // Выносливость игрока
 extern float fFoV;							// Угол обзора
 extern float fDepth;
 
+extern const wchar_t* version;
+
 // создаем константу, содержащую локаль с нужным фасетом для
 // преобразования символов при чтении из файла в кодировке UTF-8
 const locale utf8_locale = locale(locale(), new codecvt_utf8<wchar_t>());
