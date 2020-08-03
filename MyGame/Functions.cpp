@@ -45,11 +45,11 @@ void menu(wchar_t* console)
 
 	int8_t choose = 1;
 	const int8_t num_str = 4;
-	const wchar_t* intro = { L"╦     =====  ===== =====    ===== ║   ║   ===== ║   ║ ║====    ║     ║  _=_  ===== ║====  \n"
-							 L"║     ║   ║  ║       ║        ║   ║║  ║     ║   ║   ║ ║        ║║   ║║ ║   ║    =  ║      \n"
-							 L"║     ║   ║  =====   ║        ║   ║ ║ ║     ║   ║===║ ║===     ║ ║ ║ ║ ║   ║   =   ║===   \n"
-							 L"║     ║   ║      ║   ║        ║   ║  ║║     ║   ║   ║ ║        ║  ║  ║ ║===║  =    ║      \n"
-							 L"║==== ║===║  ====║   ║      ===== ║   ║     ║   ║   ║ ║====    ║     ║ ║   ║ ===== ║====  \n"
+	const wchar_t* intro = { L"╦     =====  ===== =====    ===== ║   ║   ===== ║   ║ ║====    ║     ║  _=_  ===== ║==== "
+							 L"║     ║   ║  ║       ║        ║   ║║  ║     ║   ║   ║ ║        ║║   ║║ ║   ║    =  ║     "
+							 L"║     ║   ║  =====   ║        ║   ║ ║ ║     ║   ║===║ ║===     ║ ║ ║ ║ ║   ║   =   ║===  "
+							 L"║     ║   ║      ║   ║        ║   ║  ║║     ║   ║   ║ ║        ║  ║  ║ ║===║  =    ║     "
+							 L"║==== ║===║  ====║   ║      ===== ║   ║     ║   ║   ║ ║====    ║     ║ ║   ║ ===== ║==== "
 	};
 	const wchar_t* arr_for_meny[num_str] = { L"Новая игра", L"Продолжить игру", L"Разработчики", L"Управление" };
 
@@ -126,22 +126,16 @@ void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, co
 	wColors = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
 
 	int16_t i, j;
+	int16_t str_size = 0;
 	COORD coord = { 30, 1 };						// Координаты начала
 													// Надпись Lost in the Maze
-	for (i = 0, j = 0; j < 5; j++, i+= 91, coord.Y++)
+	for (i = 0, j = 0; j < 5; j++, i+= 89, coord.Y++)
 		WriteConsoleOutputCharacter(hConsole, (intro + i), 88, coord, &dwBytesWritten);
 
 	for (i = 0, coord.X = 65, coord.Y = 12; i < num_str; i++, coord.Y++)
 	{
-		int16_t str_size = 0;
-		wchar_t c = ' ';
-		j = 0;
 													//  Подсчет символов в каждой строке категорий главного меню (Новая игра и тд)
-		while ((c = arr_for_meny[i][j]) != '\0')
-		{
-			str_size++;
-			j++;
-		}
+		str_size = counting_symbols(arr_for_meny[i]);
 
 		if (i + 1 == choose)
 		{											// Выводим категории на экран
@@ -154,6 +148,32 @@ void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, co
 			WriteConsoleOutputCharacter(hConsole, arr_for_meny[i], str_size, coord, &dwBytesWritten);
 		}
 	}
+													// Музыка в игре
+	const wchar_t* music[3] = {L"    <- Музыка ->", L"Главное меню: Dead Space - Twinkle Twinkle", L"В самой игре: Apocryphos, Kammarheit, Atrium Carceri - Cavern of Igneous Flame" };
+	for (i = 0, coord.X = 0, coord.Y = 37; i < 3; i++, coord.Y++)
+	{
+		str_size = counting_symbols(music[i]);
+		WriteConsoleOutputCharacter(hConsole, music[i], str_size, coord, &dwBytesWritten);
+	}
+													// Версия игры
+	const wchar_t* version = { L"Версия игры: beta v2.6 (PreRelease)" };
+	str_size = counting_symbols(version);
+	coord.X = iConsoleWidth - str_size; coord.Y = 39;
+	WriteConsoleOutputCharacter(hConsole, version, str_size, coord, &dwBytesWritten);
+}
+
+int16_t counting_symbols(const wchar_t* arr)
+{
+	int16_t str_size = 0, j = 0;
+	wchar_t c = ' ';
+
+	while ((c = arr[j]) != '\0')
+	{
+		str_size++;
+		j++;
+	}
+
+	return str_size;
 }
 
 void controls_info(wchar_t* console)

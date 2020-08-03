@@ -49,7 +49,7 @@ int main()
 
 	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 
-	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze - beta v2.4 (PreRelease)");		// Меняем название консоли
+	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze");		// Меняем название консоли
 	SetConsoleTitle(ConsoleTitle);
 
 	menu(console);

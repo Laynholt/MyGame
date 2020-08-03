@@ -57,6 +57,7 @@ const locale utf8_locale = locale(locale(), new codecvt_utf8<wchar_t>());
 
 void menu(wchar_t* console);
 void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, const wchar_t* intro);
+int16_t counting_symbols(const wchar_t* arr);
 void clearScreen();
 void variable_default(bool AllObeliscs[], bool AllMessages[]);
 
