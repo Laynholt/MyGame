@@ -25,10 +25,19 @@ int main()
 	_setmode(_fileno(stderr), _O_U16TEXT);
 
 	srand(time(NULL));
-	//system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
+	//system("mode con cols=150 lines=40");						// Фиксируем размер окна на 150 на 40
 
 	HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);		// Получаем максимальный размер консоли
 	COORD maxWindow = GetLargestConsoleWindowSize(out_handle);
+																// Избавляемся от полос прокрутки в буфере	
+	CONSOLE_SCREEN_BUFFER_INFO info;	
+	if (GetConsoleScreenBufferInfo(out_handle, &info))
+	{
+		COORD coord;
+		coord.X = info.srWindow.Right - info.srWindow.Left + 1;
+		coord.Y = info.srWindow.Bottom - info.srWindow.Top + 1;
+		SetConsoleScreenBufferSize(out_handle, coord);
+	}
 
 	HWND window_header = GetConsoleWindow();					// Центрируем её и задаем ей размер
 	SetWindowPos(window_header, HWND_TOP, maxWindow.X, maxWindow.Y, 1115, 690, NULL);
@@ -37,7 +46,7 @@ int main()
 
 	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 
-	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze - beta v2.1 (PreRelease)");		// Меняем название консоли
+	static const TCHAR* ConsoleTitle = TEXT("Lost in the Maze - beta v2.4 (PreRelease)");		// Меняем название консоли
 	SetConsoleTitle(ConsoleTitle);
 
 	menu(console);
