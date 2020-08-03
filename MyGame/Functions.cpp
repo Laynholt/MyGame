@@ -123,14 +123,42 @@ void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, co
 	DWORD dwBytesWritten = 0;
 
 	WORD wColors;									// Цвет покраски (белый)
-	wColors = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
+	wColors = BACKGROUND_RED;// | BACKGROUND_GREEN | BACKGROUND_BLUE;
 
 	int16_t i, j;
 	int16_t str_size = 0;
-	COORD coord = { 30, 1 };						// Координаты начала
+	COORD coord = { 30, 1 };							// Координаты начала
+
+														// Рамка
+	const wchar_t* bolder = { L"X                                                                                                           X" // 8 раз
+							  L"R#nAWay!_??Try2Sur.#ivН3v-EрьеМу]-╗                                  ╔=_=-=_T-_+-R+u_=--St_D=+-=83^$73*&(#&9#"
+							  L"                                  R                                  R                                       " // 10 раз
+							  L"                                  ╚D0nt*@$~D3St7oy+-=the:|->(o6el!5k5╝                                       "
+	};
+
+	for (i = 0, j = 0, coord.X = 20, coord.Y = 0; j < 20; j++, coord.Y++)
+	{
+		WriteConsoleOutputCharacter(hConsole, (bolder + i), 109, coord, &dwBytesWritten);
+		if (j == 7 || j == 8 || j == 18)
+			i += 109;
+	}
+
 													// Надпись Lost in the Maze
-	for (i = 0, j = 0; j < 5; j++, i+= 89, coord.Y++)
+	for (i = 0, j = 0, coord.X = 30, coord.Y = 1; j < 5; j++, i+= 89, coord.Y++)
 		WriteConsoleOutputCharacter(hConsole, (intro + i), 88, coord, &dwBytesWritten);
+
+													// Рамка
+	//const wchar_t* bolder = { L"R#nAWay!_??Try2Sur.#ive" 
+	//						  L"D                     !"
+	//						  L"?                     A"
+	//						  L"o                     ="
+	//						  L">                     v"
+	//						  L"N                     o"
+	//						  L"t                     !"
+	//						  L"_=_=-=_T-_+-R+u_=--St_D="
+	//};
+	//for (i = 0, j = 0, coord.X = 60, coord.Y = 10; j < 8; j++, i += 23, coord.Y++)
+	//	WriteConsoleOutputCharacter(hConsole, (bolder + i), 23, coord, &dwBytesWritten);
 
 	for (i = 0, coord.X = 65, coord.Y = 12; i < num_str; i++, coord.Y++)
 	{
@@ -784,6 +812,8 @@ void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter,
 
 bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[])  // открытие сохранений, но не выходит передать в game() параментры, чтоб телепортнуло куда надо...
 {
+	clearScreen();
+
 	wifstream file(L"save.txt");
 	wstring line, buf;
 	file.imbue(utf8_locale);	 // связываем наш поток с нужной локалью
