@@ -71,7 +71,7 @@ void open_map(wchar_t* console, wstring map);
 
 void save(float fPlayerX, float fPlayerY, int16_t Time, int16_t iObiliscCounter, int16_t MessageCount, bool AllMessange[], bool AllObeliscs[]);
 void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX = 1.0f, float fY = 1.0f, float fA = 1.0f, int16_t Time = 0, int16_t iObiliscSave = 0,
-    int16_t iMessangeCount = 0);
+    int16_t iMessangeCount = 0, bool bFromSave = false);
 bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObeliscs[], bool AllMessages[]);
 void authors();
 void control();
