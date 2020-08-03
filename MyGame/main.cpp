@@ -25,24 +25,27 @@ int main()
 	_setmode(_fileno(stderr), _O_U16TEXT);
 
 	srand(time(NULL));
-	//system("mode con cols=150 lines=40");						// Фиксируем размер окна на 150 на 40
+	//system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 
-	HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);		// Получаем максимальный размер консоли
+	HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);	// Получаем максимальный размер консоли
 	COORD maxWindow = GetLargestConsoleWindowSize(out_handle);
-																// Избавляемся от полос прокрутки в буфере	
-	CONSOLE_SCREEN_BUFFER_INFO info;	
-	if (GetConsoleScreenBufferInfo(out_handle, &info))
-	{
-		COORD coord;
-		coord.X = info.srWindow.Right - info.srWindow.Left + 1;
-		coord.Y = info.srWindow.Bottom - info.srWindow.Top + 1;
-		SetConsoleScreenBufferSize(out_handle, coord);
-	}
-
+															
 	HWND window_header = GetConsoleWindow();					// Центрируем её и задаем ей размер
-	SetWindowPos(window_header, HWND_TOP, maxWindow.X, maxWindow.Y, 1115, 690, NULL);
+	SetWindowPos(window_header, HWND_TOP, maxWindow.X, maxWindow.Y, 1101, 690, NULL);
 																// Запрещаем изменять размер консоли
 	SetWindowLong(window_header, GWL_STYLE, GetWindowLong(window_header, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
+																// Избавляемся от полос прокрутки в буфере	
+	//Сначала задаем минимальные значения
+	SMALL_RECT zeroWindow = { 0, 0, 0, 0 };
+	COORD zBuffer = { 1, 1 };
+	SetConsoleWindowInfo(out_handle, TRUE, &zeroWindow);
+	SetConsoleScreenBufferSize(out_handle, zBuffer);
+
+	//А уже потом изменяем значения на нужные нам
+	COORD bufferSize = { iConsoleWidth, iConsoleHeight };
+	SMALL_RECT windowSize = { 0, 0, iConsoleWidth - 1, iConsoleHeight - 1 };
+	SetConsoleScreenBufferSize(out_handle, bufferSize);
+	SetConsoleWindowInfo(out_handle, TRUE, &windowSize);
 
 	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 
