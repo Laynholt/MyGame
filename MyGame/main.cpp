@@ -25,7 +25,7 @@ int main()
 	_setmode(_fileno(stderr), _O_U16TEXT);
 
 	srand(time(NULL));
-	//system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
+	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 
 	HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);	// Получаем максимальный размер консоли
 	COORD maxWindow = GetLargestConsoleWindowSize(out_handle);
