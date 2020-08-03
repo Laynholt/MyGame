@@ -593,12 +593,13 @@ void epilogue(wchar_t* console, int16_t iObiliscCounter, bool type, int16_t n)
 	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
 	SetConsoleActiveScreenBuffer(hConsole);
 	DWORD dwBytesWritten = 0;
+	int32_t counter = 0;
 
 	game_over(console, 0x256C);
 	letter(console, iObiliscCounter, n);
 	WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight * iConsoleWidth, { 0,0 }, &dwBytesWritten);
 
-	while (_getch() != ' ') {}
+	while (_getch() != 13) {}
 
 	if (type == 0)
 	{
@@ -615,6 +616,7 @@ void epilogue(wchar_t* console, int16_t iObiliscCounter, bool type, int16_t n)
 			epilogue(console, iObiliscCounter, type, n + 1);
 		}
 	}
+
 }
 
 void map_pulling(wstring& map)

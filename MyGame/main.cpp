@@ -18,7 +18,7 @@ int16_t iStamina = STAMINA_MAX;							// Выносливость игрока
 float fFoV = 3.14159f / 1.78f;							// Угол обзора
 float fDepth = 26.0f;
 
-const wchar_t* version = { L"Версия игры: beta v2.6 (PreRelease)" };	// Версия игры
+const wchar_t* version = { L"Версия игры: release v1.0" };	// Версия игры
 
 int main()
 {
