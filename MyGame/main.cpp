@@ -24,15 +24,15 @@ int main()
 	_setmode(_fileno(stderr), _O_U16TEXT);
 
 	srand(time(NULL));
-	//system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
+	system("mode con cols=150 lines=40");					// Фиксируем размер окна на 150 на 40
 
-	HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);		// Получаем максимальный размер консоли
-	COORD maxWindow = GetLargestConsoleWindowSize(out_handle);
+	//HANDLE out_handle = GetStdHandle(STD_OUTPUT_HANDLE);		// Получаем максимальный размер консоли
+	//COORD maxWindow = GetLargestConsoleWindowSize(out_handle);
 
-	HWND window_header = GetConsoleWindow();					// Центрируем её и задаем ей размер
-	SetWindowPos(window_header, HWND_TOP, maxWindow.X, maxWindow.Y, 1115, 690, NULL);
+	//HWND window_header = GetConsoleWindow();					// Центрируем её и задаем ей размер
+	//SetWindowPos(window_header, HWND_TOP, maxWindow.X, maxWindow.Y, 1115, 690, NULL);
 																// Запрещаем изменять размер консоли
-	SetWindowLong(window_header, GWL_STYLE, GetWindowLong(window_header, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
+	//SetWindowLong(window_header, GWL_STYLE, GetWindowLong(window_header, GWL_STYLE) & ~WS_MAXIMIZEBOX & ~WS_SIZEBOX);
 
 	wchar_t* console = new wchar_t[iConsoleHeight * iConsoleWidth];
 
