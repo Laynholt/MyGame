@@ -45,7 +45,13 @@ void menu(wchar_t* console)
 
 	int8_t choose = 1;
 	const int8_t num_str = 4;
-	wstring arr_for_meny[num_str] = { L"Новая игра", L"Продолжить игру", L"Разработчики", L"Управление" };
+	const wchar_t* intro = { L"╦     =====  ===== =====    ===== ║   ║   ===== ║   ║ ║====    ║     ║  _=_  ===== ║====  \n"
+							 L"║     ║   ║  ║       ║        ║   ║║  ║     ║   ║   ║ ║        ║║   ║║ ║   ║    =  ║      \n"
+							 L"║     ║   ║  =====   ║        ║   ║ ║ ║     ║   ║===║ ║===     ║ ║ ║ ║ ║   ║   =   ║===   \n"
+							 L"║     ║   ║      ║   ║        ║   ║  ║║     ║   ║   ║ ║        ║  ║  ║ ║===║  =    ║      \n"
+							 L"║==== ║===║  ====║   ║      ===== ║   ║     ║   ║   ║ ║====    ║     ║ ║   ║ ===== ║====  \n"
+	};
+	const wchar_t* arr_for_meny[num_str] = { L"Новая игра", L"Продолжить игру", L"Разработчики", L"Управление" };
 
 	// Воспроизводим музыку
 	audiere::AudioDevicePtr device = audiere::OpenDevice();					// Для начала нужно открыть AudioDevice 
@@ -55,21 +61,27 @@ void menu(wchar_t* console)
 	sound->setRepeat(true);
 
 	clearScreen();
-	color_meny(choose, arr_for_meny, num_str);
+	color_meny(choose, arr_for_meny, num_str, intro);
 
 	while (true)
 	{
 		switch (_getch())
 		{
 		case 72: case 'w':
-			choose = (choose > 1) ? --choose : 1;
-			clearScreen();
-			color_meny(choose, arr_for_meny, num_str);
+			if (choose > 1)
+			{
+				--choose;
+				clearScreen();
+				color_meny(choose, arr_for_meny, num_str, intro);
+			}
 			break;
 		case 80: case 's':
-			choose = (choose < 4) ? ++choose : 4;
-			clearScreen();
-			color_meny(choose, arr_for_meny, num_str);
+			if (choose < 4)
+			{
+				++choose;
+				clearScreen();
+				color_meny(choose, arr_for_meny, num_str, intro);
+			}
 			break;
 		case 13:
 			if (choose == 1) //запуск игры
@@ -97,29 +109,49 @@ void menu(wchar_t* console)
 			choose = 1;
 
 			clearScreen();
-			color_meny(choose, arr_for_meny, num_str);
+			color_meny(choose, arr_for_meny, num_str, intro);
 			variable_default(AllObeliscs, AllMessages);
 			break;
 		}
 	}
 }
 
-void color_meny(int8_t choose, wstring arr_for_meny[], int8_t num_str)
+void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, const wchar_t* intro)
 {
-	HANDLE color;
-	color = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleActiveScreenBuffer(color); // Устанавливает заданный экранный буфер, чтобы он стал текущим отображаемым экранным буфером консоли
-	for (int8_t i = 0; i < num_str; i++)
+	HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
+	SetConsoleActiveScreenBuffer(hConsole);
+	DWORD dwBytesWritten = 0;
+
+	WORD wColors;									// Цвет покраски (белый)
+	wColors = BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE;
+
+	int16_t i, j;
+	COORD coord = { 30, 1 };						// Координаты начала
+													// Надпись Lost in the Maze
+	for (i = 0, j = 0; j < 5; j++, i+= 91, coord.Y++)
+		WriteConsoleOutputCharacter(hConsole, (intro + i), 88, coord, &dwBytesWritten);
+
+	for (i = 0, coord.X = 65, coord.Y = 12; i < num_str; i++, coord.Y++)
 	{
-		if (i + 1 == choose)
+		int16_t str_size = 0;
+		wchar_t c = ' ';
+		j = 0;
+													//  Подсчет символов в каждой строке категорий главного меню (Новая игра и тд)
+		while ((c = arr_for_meny[i][j]) != '\0')
 		{
-			SetConsoleTextAttribute(color, 112);
-			wcout << arr_for_meny[i] << endl;
-			SetConsoleTextAttribute(color, 15);
+			str_size++;
+			j++;
+		}
+
+		if (i + 1 == choose)
+		{											// Выводим категории на экран
+			WriteConsoleOutputCharacter(hConsole, arr_for_meny[i], str_size, coord, &dwBytesWritten);
+			for (j = 0; j < str_size + 1; j++)		// По-символьно красим категории в выбранный цвет
+				FillConsoleOutputAttribute(hConsole, wColors, j, coord, &dwBytesWritten);
 		}
 		else
-		{
-			wcout << arr_for_meny[i] << endl;
+		{	
+			WriteConsoleOutputCharacter(hConsole, arr_for_meny[i], str_size, coord, &dwBytesWritten);
 		}
 	}
 }
