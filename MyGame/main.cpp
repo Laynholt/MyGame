@@ -13,6 +13,7 @@ float fPlayerA = 0.0f;									// Направление игрока
 float fBufPlayerA = fPlayerA;
 float fSpeed = SPEED;									// Скорость передвижения
 float fSpeedCamera = 5.0f;								// Скорость камеры
+int16_t iStamina = STAMINA_MAX;							// Выносливость игрока
 
 float fFoV = 3.14159f / 1.78f;							// Угол обзора
 float fDepth = 26.0f;

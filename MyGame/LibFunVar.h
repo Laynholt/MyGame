@@ -31,6 +31,7 @@ using namespace std;
 
 #define SPEED 5
 #define TURBO_BOOST 5
+#define STAMINA_MAX 1000
 
 extern int16_t iConsoleWidth;				// Ширина консоли
 extern int16_t iConsoleHeight;				// Высота консоли
@@ -45,6 +46,7 @@ extern float fPlayerA;						// Направление игрока
 extern float fBufPlayerA;
 extern float fSpeed;						// Скорость передвижения
 extern float fSpeedCamera;					// Скорость поворота
+extern int16_t iStamina;                    // Выносливость игрока
 
 extern float fFoV;							// Угол обзора
 extern float fDepth;

@@ -895,9 +895,8 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 	float fStopwatch = Time;						// Таймер
 	float fSpeedBoost = 4.0f;						// Доп скорость при беге
 
+	int16_t iRunDelay = 50;
 	int16_t iScreamDelay = 0;						// Задержка для воспроизведения скримера
-	int16_t iRunTime = 0;							// Время бега
-	int16_t iRunDelay = 0;							// Задержка для востановления выносливости
 	int16_t iMinimapDelay = 50;						// Задержка при откл и вкл миникарты
 	int16_t iMessageDelay = 0;						// Задерка для вывода след сообщения
 	int16_t iObiliscCounter = iObiliscSave;			// Количество обелисков
@@ -1197,7 +1196,8 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 			&& iMessageDelay == 0)    // Символ сообщения
 		{
 			iNumberMessange = letter(console, iObiliscCounter);
-			_getch();
+										// Восстановление выносливости
+			if (iStamina < STAMINA_MAX) { iStamina++; }
 
 			if (!((GetAsyncKeyState((unsigned short)'W')) || (GetAsyncKeyState((unsigned short)'S')) || (GetAsyncKeyState((unsigned short)'A'))
 				|| (GetAsyncKeyState((unsigned short)'D')) & 0x8000))
@@ -1212,6 +1212,13 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 						AllMessages[iNumberMessange] = true;
 					}
 				}
+
+			fStopwatch = clock() / 1000.0f;
+			// Вывод координат и таймера
+			swprintf_s(console, 140, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Найдено записок[%d|14],"
+				" Скорость: %2.2f, Выносливость: %d", fPlayerX, fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, iMessageCount,
+				fSpeed, iStamina);
+			WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight* iConsoleWidth, { 0,0 }, & dwBytesWritten);
 		}
 
 		else if (iObiliscCounter == 5)    // Концовка (0 - обелиск, 1 - %)
@@ -1343,40 +1350,26 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 			if ((GetAsyncKeyState((unsigned short)'W') & 0x8000) && bScreamerOn == false)	// Клавишей "W" идём вперёд
 			{
 				if (GetAsyncKeyState((unsigned short)'Z') & 0x8000)
-				{
-					if (iRunTime == 0 && iRunDelay == 0)
+				{													// Если бег выкл, то вкл
+					if (!bZFlag && iRunDelay == 50 && iStamina > 0)
+					{
 						bZFlag = true;
+						fSpeed += fSpeedBoost;
+						iRunDelay = 0;
+					}
+
+					else if (iRunDelay == 50 && iStamina > 0)
+					{
+						bZFlag = false;
+						fSpeed -= fSpeedBoost;
+						iRunDelay = 0;
+					}
 				}
 
-				if (bZFlag)
+				if (bZFlag)										// Если вкл бег, то уменьшаем выносливость
 				{
-					if (iRunTime == 0 && iRunDelay == 0)
-					{
-						fSpeed += fSpeedBoost;
-
-					}
-
-					iRunTime++;
-
-					if (iRunTime == 1000)
-					{
-						fSpeed -= fSpeedBoost;
-						iRunDelay = 3000;
-					}
-
-					else if (iRunTime > 1000)
-					{
-						if (iRunDelay == 0)
-						{
-							iRunTime = 0;
-							bZFlag = false;
-						}
-
-						else
-						{
-							iRunDelay--;
-						}
-					}
+					if (iStamina > 0) { iStamina--;}
+					else if (iStamina == 0) { bZFlag = false; fSpeed -= fSpeedBoost; }
 				}
 
 
@@ -1402,6 +1395,12 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 
 			if ((GetAsyncKeyState((unsigned short)'S') & 0x8000) && bScreamerOn == false)	// Клавишей "S" идём назад
 			{
+				if (bZFlag)							// Если вкл бег, то уменьшаем выносливость
+				{
+					if (iStamina > 0) { iStamina--; }
+					else if (iStamina == 0) { bZFlag = false; fSpeed -= fSpeedBoost; }
+				}
+
 				fPlayerX -= sinf(fPlayerA) * fSpeed * fElapsedTime;
 				fPlayerY -= cosf(fPlayerA) * fSpeed * fElapsedTime;
 				if (map[(int16_t)fPlayerY * iMapWidth + (int16_t)fPlayerX] == '#')  // Если столкнулись со стеной, но откатываем шаг
@@ -1520,6 +1519,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 			else if (fPlayerXBuf == fPlayerX && fPlayerYBuf == fPlayerY)
 			{
 				iWalkDelay = 0;
+				if (iStamina < STAMINA_MAX) { iStamina++; }
 			}
 
 			else if ((int16_t)fSpeed == SPEED)
@@ -1572,6 +1572,8 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 			}
 
 			iSoundEffectDelay--;
+
+			if (iRunDelay < 50) { iRunDelay++; }							// Задержка для вкл/выкл бега
 
 			if (iMinimapDelay < 50)											// Задержка для вкл/выкл миникарты
 			{
@@ -1709,8 +1711,9 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 				message_info(console, AllMessages);
 
 			// Вывод координат и таймера
-			swprintf_s(console, 120, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Найдено записок[%d|14],"
-				" Скорость: %2.2f", fPlayerX, fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, iMessageCount,fSpeed);
+			swprintf_s(console, 140, L"X=%3.2f, Y=%3.2f, A=%3.2f, Время: %3.3f, Найдено обелисков[%d|5], Найдено записок[%d|14],"
+				" Скорость: %2.2f, Выносливость: %d", fPlayerX, fPlayerY, fPlayerA, fStopwatch, iObiliscCounter, iMessageCount,
+				fSpeed, iStamina);
 		}
 
 		// Вывод на экран
