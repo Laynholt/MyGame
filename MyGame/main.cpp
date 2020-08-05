@@ -5,8 +5,8 @@ int16_t iConsoleHeight = 40;							// Высота консоли
 int16_t iMapWidth = 200;								// Ширина карты
 int16_t iMapHeight = 100;								// Высота карты
 
-float fPlayerX = 165.0f;
-float fPlayerY = 55.0f;
+float fPlayerX = 1.0f;
+float fPlayerY = 1.0f;
 float fPlayerXBuf = fPlayerX;
 float fPlayerYBuf = fPlayerY;
 float fPlayerA = 0.0f;									// Направление игрока

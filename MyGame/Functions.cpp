@@ -1355,7 +1355,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 			WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight* iConsoleWidth, { 0,0 }, & dwBytesWritten);
 		}
 
-		else if (iObiliscCounter == 1)    // Концовка (0 - обелиск, 1 - %)
+		else if (iObiliscCounter == 5)    // Концовка (0 - обелиск, 1 - %)
 		{
 			epilogue(console, iObiliscCounter, 0);
 			bGameIsEnd = true;
