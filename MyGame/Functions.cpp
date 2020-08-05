@@ -130,17 +130,23 @@ void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, co
 	COORD coord = { 30, 1 };							// Координаты начала
 
 														// Рамка
-	const wchar_t* bolder = { L"X                                                                                                           X" // 8 раз
-							  L"R#nAWay!_??Try2Sur.#ivН3v-EрьеМу]-╗                                  ╔=_=-=_T-_+-R+u_=--St_D=+-=83^$73*&(#&9#"
-							  L"                                  R                                  R                                       " // 10 раз
-							  L"                                  ╚D0nt*@$~D3St7oy+-=the:|->(o6el!5k5╝                                       "
+	const wchar_t* bolder = { L"                                                                                                             " // 8 раз
+							  L"                   >>->>->>->>->>>-  Выберете пункт и нажмите Enter  -<<<-<<-<<-<<-<<                        "
+							  L"                                  ╔╧╧╧╧╤╤╤╤╧╧╧╧╤╤╤╤╧╧╧╧╤╤╤╤╧╧╧╧╤╤╤╤╧╧╗                                       "
+							  L"                                  ╣                                  ╠                                       " // 10 раз
+							  L"                                  ╚╧╧╧╧╤╤╤╤╧╧╧╧╤╤╤╤╧╧╧╧╤╤╤╤╧╧╧╧╤╤╤╤╧╧╝                                       "
 	};
 
 	for (i = 0, j = 0, coord.X = 20, coord.Y = 0; j < 20; j++, coord.Y++)
 	{
 		WriteConsoleOutputCharacter(hConsole, (bolder + i), 109, coord, &dwBytesWritten);
-		if (j == 7 || j == 8 || j == 18)
+		if (j == 7 || j == 9 || j == 18)
 			i += 109;
+		else if (j == 8)
+		{
+			i += 109;
+			coord.Y += 5;
+		}
 	}
 
 													// Надпись Lost in the Maze
@@ -160,7 +166,7 @@ void color_meny(int8_t choose, const wchar_t* arr_for_meny[], int8_t num_str, co
 	//for (i = 0, j = 0, coord.X = 60, coord.Y = 10; j < 8; j++, i += 23, coord.Y++)
 	//	WriteConsoleOutputCharacter(hConsole, (bolder + i), 23, coord, &dwBytesWritten);
 
-	for (i = 0, coord.X = 65, coord.Y = 12; i < num_str; i++, coord.Y++)
+	for (i = 0, coord.X = 65, coord.Y = 17; i < num_str; i++, coord.Y++)
 	{
 													//  Подсчет символов в каждой строке категорий главного меню (Новая игра и тд)
 		str_size = counting_symbols(arr_for_meny[i]);
@@ -1349,7 +1355,7 @@ void game(wchar_t* console, bool AllObeliscs[], bool AllMessages[], float fX, fl
 			WriteConsoleOutputCharacter(hConsole, console, iConsoleHeight* iConsoleWidth, { 0,0 }, & dwBytesWritten);
 		}
 
-		else if (iObiliscCounter == 5)    // Концовка (0 - обелиск, 1 - %)
+		else if (iObiliscCounter == 1)    // Концовка (0 - обелиск, 1 - %)
 		{
 			epilogue(console, iObiliscCounter, 0);
 			bGameIsEnd = true;
