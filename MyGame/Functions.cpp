@@ -622,7 +622,6 @@ void epilogue(wchar_t* console, int16_t iObiliscCounter, bool type, int16_t n)
 			epilogue(console, iObiliscCounter, type, n + 1);
 		}
 	}
-
 }
 
 void map_pulling(wstring& map)
@@ -878,7 +877,7 @@ bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObe
 
 	if (file.is_open())
 	{
-		wcout << L"\nВсе сохранения: ";
+		wcout << L"|->Все сохранения: ";
 
 		while (!exit)
 		{
@@ -923,7 +922,7 @@ bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObe
 				}
 
 				if (!line.empty())
-					wcout << L"\nСохраниние [" << ++whil << "] " << line;
+					wcout << L"\n\t|-->Сохранение [" << ++whil << "] " << line;
 
 			}
 
@@ -932,15 +931,15 @@ bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObe
 
 			if (whil == 0)
 			{
-				wcout << L"\nУ вас нет сохранений";
-				wcout << L"\nНажмите Enter, чтобы начать новую игру.";
+				wcout << L"\n\t|-->У вас нет сохранений";
+				wcout << L"\n\t|-->Нажмите Enter, чтобы начать новую игру.";
 				_getch();
 				exit = 1;
 			}
 
 			else if (whil > 0)
 			{
-				wcout << L"\n\nВыберете нужное сохранение [Введите 0, для возврата в главное меню]>> ";
+				wcout << L"\n\n|->Выберете нужное сохранение [Введите 0, для возврата в главное меню]>> ";
 				try
 				{
 					wcin >> menu;
@@ -997,7 +996,10 @@ bool continue_game(wchar_t* console, audiere::OutputStreamPtr sound, bool AllObe
 				else
 				{
 					whil = 0;
-					wcout << L"\nПопробуйте еще раз!\n";
+					wcout << L"|-> [!] Выбранного Вами сохранения не существует! Попробуйте еще раз!\n";
+					_getch();
+					clearScreen();
+					wcout << L"|->Все сохранения: ";
 				}
 			}
 		}
@@ -1878,7 +1880,8 @@ void control()
 	clearScreen();
 
 	wcout <<
-		L"|-------------------------------->>>\n"
+		L"|->Управление:\n"
+		"|------------------->>>\n"
 		"|>> [W] - Идти вперёд\n"
 		"|>> [S] - Идти назад\n"
 		"|>> [Z] - Бежать\n"
